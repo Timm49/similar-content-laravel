@@ -13,25 +13,16 @@ class GenerateEmbeddingsForModel implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $modelClass;
+    public $transformer;
 
-    /**
-     * Create a new job instance.
-     *
-     * @param string $modelClass
-     * @return void
-     */
-    public function __construct(string $modelClass)
+    public function __construct(string $modelClass, string $transformer)
     {
         $this->modelClass = $modelClass;
+        $this->transformer = $transformer;
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return void
-     */
     public function handle()
     {
-        // Logic to generate embeddings for the model
+        
     }
 } 

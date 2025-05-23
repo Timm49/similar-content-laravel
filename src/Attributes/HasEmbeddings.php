@@ -8,7 +8,7 @@ use Attribute;
 class HasSimilarContent
 {
     public function __construct(
-        public string $transformer,
+        public ?string $transformer = null,
     ) {
     }
 } 

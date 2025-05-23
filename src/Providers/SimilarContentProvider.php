@@ -10,11 +10,13 @@ class SimilarContentProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(SimilarContent::class, function ($app) {
+            return new SimilarContent();
+        });
+
         $this->mergeConfigFrom(
             __DIR__.'/../../config/similar_content.php', 'similar_content'
         );
-
-        SimilarContent::discoverModelsWithEmbeddings(config('similar_content.models_path'));
     }
 
     public function boot()
@@ -27,6 +29,6 @@ class SimilarContentProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../../config/similar_content.php' => config_path('similar_content.php'),
             ], 'similar-content-config');
-        }
+        }        
     }
 }

@@ -2,11 +2,25 @@
 
 namespace Timm49\LaravelSimilarContent;
 
+use App\Interfaces\ModelEmbed;
 use Illuminate\Database\Eloquent\Model;
 use Timm49\LaravelSimilarContent\Attributes\HasSimilarContent;
+use Timm49\LaravelSimilarContent\ValueObjects\EmbedModal;
 
 class SimilarContent
 {
+    private static array $registeredModels = [];
+
+
+    public static function getRegisteredModels(): array
+    {
+        if (empty(self::$registeredModels)) {
+            self::$registeredModels = self::discoverModelsWithEmbeddings(config('similar_content.models_path'));
+        }
+
+        return self::$registeredModels;
+    }
+
     public static function discoverModelsWithEmbeddings(string $path): array
     {
         $models = [];
@@ -27,11 +41,17 @@ class SimilarContent
             $attributes = $reflection->getAttributes(HasSimilarContent::class);
 
             if (! empty($attributes)) {
-                $models[] = $className;
+                // $models[] = $className;
+                $models[] = new EmbedModal(
+                    model: $className,
+                    transformer: $attributes[0]->getArguments()['transformer'] ?? EmbeddingTransformer::class,
+                );
             }
         }
 
-        return $models;
+        self::$registeredModels = $models;
+
+        return self::$registeredModels;
     }
 
     static function extractNamespaceFromFile($filePath): ?string {
