@@ -25,10 +25,14 @@ class SimilarContentProvider extends ServiceProvider
             $this->commands([
                 GenerateEmbeddingsCommand::class,
             ]);
-
             $this->publishes([
                 __DIR__.'/../../config/similar_content.php' => config_path('similar_content.php'),
-            ], 'similar-content-config');
+            ], 'similar-content-configuration');
+            $this->publishes([
+                __DIR__.'/../../database/migrations/2023_01_01_000001_create_articles_table.php' => database_path('migrations/2023_01_01_000001_create_articles_table.php'),
+                __DIR__.'/../../database/migrations/2023_01_01_000001_create_articles_table.php' => database_path('migrations/2023_01_01_000001_create_articles_table.php'),
+                __DIR__.'/../../database/migrations/create_embeddings_table.php' => database_path('migrations/create_embeddings_table.php'),
+            ], 'similar-content-migrations');
         }        
     }
 }

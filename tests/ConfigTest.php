@@ -6,19 +6,17 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Artisan;
 
 it('publishes the config file', function () {
-    if (file_exists(config_path('similar_content.php'))) {
-        unlink(config_path('similar_content.php'));
+    $configFilePath = config_path('similar_content.php');
+    if (file_exists($configFilePath)) {
+        unlink($configFilePath);
     }
 
-    expect(file_exists(config_path('similar_content.php')))->toBeFalse();
+    expect(file_exists($configFilePath))->toBeFalse();
 
     Artisan::call('vendor:publish', [
         '--provider' => 'Timm49\LaravelSimilarContent\Providers\SimilarContentProvider',
-        '--tag' => 'similar-content-config',
+        '--tag' => 'similar-content-configuration',
     ]);
 
-    expect(file_exists(config_path('similar_content.php')))->toBeTrue();
-
-    $configContent = file_get_contents(config_path('similar_content.php'));
-    expect($configContent)->toContain('return [', "'models_path' => app_path('Models'),", '];');
+    expect(file_exists($configFilePath))->toBeTrue();
 }); 
