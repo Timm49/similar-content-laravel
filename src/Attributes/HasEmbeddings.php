@@ -8,8 +8,7 @@ use Attribute;
 class HasSimilarContent
 {
     public function __construct(
-        public ?string $column = null,
-        public ?string $model = null,
+        public string $transformer,
     ) {
     }
 } 
