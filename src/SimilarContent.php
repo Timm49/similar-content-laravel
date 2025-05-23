@@ -13,7 +13,7 @@ class SimilarContent
         $files = glob($path . '/*.php');
 
         foreach ($files as $file) {
-            $className = 'Timm49\\LaravelSimilarContent\\Tests\\Fixtures\\Models\\' . basename($file, '.php');
+            $className = self::extractNamespaceFromFile($file) . '\\' . basename($file, '.php');
             
             if (! class_exists($className)) {
                 continue;
@@ -32,5 +32,22 @@ class SimilarContent
         }
 
         return $models;
+    }
+
+    static function extractNamespaceFromFile($filePath) {
+        // Read the file contents
+        $fileContents = file_get_contents($filePath);
+
+        // Define the regular expression pattern to match the namespace
+        $namespacePattern = '/namespace\s+([^;]+);/';
+
+        // Use preg_match to find the namespace
+        if (preg_match($namespacePattern, $fileContents, $matches)) {
+            // Return the captured namespace
+            return $matches[1];
+        }
+
+        // Return null if no namespace is found
+        return null;
     }
 }
