@@ -2,25 +2,17 @@
 
 namespace Timm49\LaravelSimilarContent\Tests\Jobs;
 
-use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\DB;
 use OpenAI\Laravel\Facades\OpenAI;
 use OpenAI\Responses\Embeddings\CreateResponse;
-use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForModel;
 use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForRecord;
 use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
 use Timm49\LaravelSimilarContent\Tests\Fixtures\EmbeddingTransformers\ArticleEmbeddingTransformer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
-
-afterEach(function () {
-    File::delete(glob(database_path('migrations/*.php')));
-});
 
 beforeEach(function () {
     Artisan::call('migrate:fresh');
-    Queue::fake();
     OpenAI::fake([
         CreateResponse::fake([
             'object' => 'list',
@@ -42,17 +34,35 @@ beforeEach(function () {
     ]);
 });
 
-it('dispatches a job for each record', function () {
-    
+
+it('generates embeddings for each record', function () {
     $article = Article::create([
         'title' => 'Test Article',
         'content' => 'This is a test article',
     ]);
 
-    $job = new GenerateEmbeddingsForModel(Article::class, ArticleEmbeddingTransformer::class);
+    $job = new GenerateEmbeddingsForRecord($article, ArticleEmbeddingTransformer::class);
     $job->handle();
 
-    Queue::assertPushed(GenerateEmbeddingsForRecord::class, function ($job) use ($article) {
-        return $job->record->is($article);
+    OpenAI::embeddings()->assertSent(function (string $method, array $parameters) use ($article) {
+        return $parameters['input'] === $article->title . ' ' . $article->content;
     });
+})->uses(RefreshDatabase::class)->in('.');
+
+
+it('creates an embedding record for the article', function () {
+    $article = Article::create([
+        'title' => 'Test Article',
+        'content' => 'This is a test article',
+    ]);
+
+    $job = new GenerateEmbeddingsForRecord($article, ArticleEmbeddingTransformer::class);
+    $job->handle();
+
+    $embeddingRecord = DB::table('embeddings')->where('embeddable_id', $article->id)->first();
+
+    expect($embeddingRecord)->not->toBeNull();
+    expect($embeddingRecord->embeddable_type)->toBe(Article::class);
+    expect($embeddingRecord->data)->toBeJson();
+
 })->uses(RefreshDatabase::class)->in('.'); 

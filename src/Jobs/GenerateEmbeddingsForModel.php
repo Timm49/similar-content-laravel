@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use OpenAI\Laravel\Facades\OpenAI;
 use Timm49\LaravelSimilarContent\Interfaces\EmbeddingTransformer;
 use Illuminate\Support\Facades\DB;
+use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForRecord;
 
 class GenerateEmbeddingsForModel implements ShouldQueue
 {
@@ -27,25 +28,11 @@ class GenerateEmbeddingsForModel implements ShouldQueue
     public function handle()
     {
         $modelClass = $this->modelClass;
-        $transformer = app($this->transformer);
+
         $records = $modelClass::all();
-        
+
         foreach ($records as $record) {
-            $input = $transformer->getEmbeddingData($record);
-
-            $response = OpenAI::embeddings()->create([
-                'model' => 'text-embedding-3-small',
-                'input' => $input,
-            ]);
-
-            $embedding = $response['data'][0]['embedding'];
-
-            // Store the embedding in the database
-            DB::table('embeddings')->insert([
-                'embeddable_type' => $modelClass,
-                'embeddable_id' => $record->id,
-                'data' => json_encode($embedding),
-            ]);
+            GenerateEmbeddingsForRecord::dispatch($record, $this->transformer);
         }
     }
 } 
