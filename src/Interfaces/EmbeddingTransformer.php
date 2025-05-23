@@ -1,8 +1,10 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent;
+namespace Timm49\LaravelSimilarContent\Interfaces;
+
+use Illuminate\Database\Eloquent\Model;
 
 interface EmbeddingTransformer
 {
-    public function getEmbeddingData(): array;
+    public function getEmbeddingData(Model $model): string;
 } 

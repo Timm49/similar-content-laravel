@@ -44,7 +44,7 @@ class SimilarContent
                 // $models[] = $className;
                 $models[] = new EmbedModal(
                     model: $className,
-                    transformer: $attributes[0]->getArguments()['transformer'] ?? EmbeddingTransformer::class,
+                    transformer: $attributes[0]->getArguments()['transformer'] ?? DefaultEmbeddingTransformer::class,
                 );
             }
         }

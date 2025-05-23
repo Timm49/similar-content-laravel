@@ -3,7 +3,6 @@
 use Timm49\LaravelSimilarContent\Tests\TestCase;
 
 uses(TestCase::class)->in('.');
-
 /*
 |--------------------------------------------------------------------------
 | Expectations
