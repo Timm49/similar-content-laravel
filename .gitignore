@@ -1,2 +1,3 @@
 vendor/
-# Add other directories or files to ignore below 
+.idea
+# Add other directories or files to ignore below

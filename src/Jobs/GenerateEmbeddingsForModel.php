@@ -7,10 +7,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use OpenAI\Laravel\Facades\OpenAI;
-use Timm49\LaravelSimilarContent\Interfaces\EmbeddingTransformer;
-use Illuminate\Support\Facades\DB;
-use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForRecord;
 
 class GenerateEmbeddingsForModel implements ShouldQueue
 {
