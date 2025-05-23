@@ -3,9 +3,9 @@
 namespace Timm49\LaravelSimilarContent\Tests\Fixtures\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Timm49\LaravelSimilarContent\Attributes\HasEmbeddings;
+use Timm49\LaravelSimilarContent\Attributes\HasSimilarContent;
 
-#[HasEmbeddings]
+#[HasSimilarContent]
 class Article extends Model
 {
     protected $guarded = [];
