@@ -23,7 +23,7 @@ class SimilarContent
 
     public static function discoverModelsWithEmbeddings(string $path): array
     {
-        $models = [];
+        self::$registeredModels = [];
         $files = glob($path . '/*.php');
 
         foreach ($files as $file) {
@@ -42,14 +42,9 @@ class SimilarContent
 
             if (! empty($attributes)) {
                 // $models[] = $className;
-                $models[] = new EmbedModal(
-                    model: $className,
-                    transformer: $attributes[0]->getArguments()['transformer'] ?? DefaultEmbeddingTransformer::class,
-                );
+                self::$registeredModels[] = $className;
             }
         }
-
-        self::$registeredModels = $models;
 
         return self::$registeredModels;
     }

@@ -46,7 +46,6 @@ it('dispatches a job for each model with HasSimilarContent attribute', function 
 
     Queue::assertCount(1);
     Queue::assertPushed(GenerateEmbeddingsForRecord::class, function ($job) use ($comment) {
-        return $job->record->is($comment) &&
-            $job->transformer === DefaultEmbeddingTransformer::class;
+        return $job->record->is($comment);
     });
 }); 

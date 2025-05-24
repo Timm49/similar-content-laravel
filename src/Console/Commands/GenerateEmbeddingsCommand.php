@@ -3,7 +3,6 @@
 namespace Timm49\LaravelSimilarContent\Console\Commands;
 
 use Illuminate\Console\Command;
-use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForModel;
 use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForRecord;
 use Timm49\LaravelSimilarContent\SimilarContent;
 
@@ -15,10 +14,10 @@ class GenerateEmbeddingsCommand extends Command
     public function handle()
     {
         foreach (SimilarContent::getRegisteredModels() as $embedModal) {
-            $records = $embedModal->model::all();
+            $records = $embedModal::all();
 
             foreach ($records as $record) {
-                GenerateEmbeddingsForRecord::dispatch($record, $embedModal->transformer);
+                GenerateEmbeddingsForRecord::dispatch($record);
                 $this->info("Dispatched job for record: $record->id");
             }
         }

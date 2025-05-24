@@ -10,24 +10,27 @@ class SimilarContentProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(SimilarContent::class, function ($app) {
-            return new SimilarContent();
-        });
-
         $this->mergeConfigFrom(
             __DIR__.'/../../config/similar_content.php', 'similar_content'
         );
+
+        $this->app->singleton(SimilarContent::class, function ($app) {
+            return new SimilarContent();
+        });
     }
 
     public function boot()
     {
         if ($this->app->runningInConsole()) {
+
             $this->commands([
                 GenerateEmbeddingsCommand::class,
             ]);
+
             $this->publishes([
                 __DIR__.'/../../config/similar_content.php' => config_path('similar_content.php'),
             ], 'similar-content-configuration');
+            
             $this->publishes([
                 __DIR__.'/../../database/migrations/create_embeddings_table.php' => database_path('migrations/'.date('Y_m_d_His').'_create_embeddings_table.php'),
             ], 'similar-content-migrations');

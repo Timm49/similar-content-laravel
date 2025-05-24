@@ -15,17 +15,15 @@ class GenerateEmbeddingsForRecord implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $record;
-    public $transformer;
 
-    public function __construct($record, string $transformer)
+    public function __construct($record)
     {
         $this->record = $record;
-        $this->transformer = $transformer;
     }
 
     public function handle()
     {
-        $input = app($this->transformer)->getEmbeddingData($this->record);
+        $input = $this->record->getEmbeddingData();
 
         $response = OpenAI::embeddings()->create([
             'model' => 'text-embedding-3-small',
