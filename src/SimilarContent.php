@@ -11,22 +11,12 @@ class SimilarContent
 {
     private static array $registeredModels = [];
 
-
-    public static function getRegisteredModels(): array
-    {
-        if (empty(self::$registeredModels)) {
-            self::$registeredModels = self::discoverModelsWithEmbeddings(config('similar_content.models_path'));
-        }
-
-        return self::$registeredModels;
-    }
-
-    public static function discoverModelsWithEmbeddings(string $path): array
+    public static function getRegisteredModels(?string $path = null): array
     {
         self::$registeredModels = [];
-        $files = glob($path . '/*.php');
-
-        foreach ($files as $file) {
+        $path ??= config('similar_content.models_path', app_path('Models'));
+        
+        foreach (glob($path . '/*.php') as $file) {
             $className = self::extractNamespaceFromFile($file) . '\\' . basename($file, '.php');
             
             if (! class_exists($className)) {
@@ -41,7 +31,6 @@ class SimilarContent
             $attributes = $reflection->getAttributes(HasSimilarContent::class);
 
             if (! empty($attributes)) {
-                // $models[] = $className;
                 self::$registeredModels[] = $className;
             }
         }
@@ -51,7 +40,6 @@ class SimilarContent
 
     static function extractNamespaceFromFile($filePath): ?string {
         $fileContents = file_get_contents($filePath);
-
         $namespacePattern = '/namespace\s+([^;]+);/';
 
         if (preg_match($namespacePattern, $fileContents, $matches)) {
