@@ -37,6 +37,7 @@ beforeEach(function () {
 it('dispatches a job for each model with HasSimilarContent attribute', function () {
 
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
+
     $comment = Comment::create([
         'content' => 'This is a test comment',
     ]);
@@ -44,7 +45,5 @@ it('dispatches a job for each model with HasSimilarContent attribute', function 
     Artisan::call('similar-content:generate-embeddings');
 
     Queue::assertCount(1);
-    Queue::assertPushed(GenerateEmbeddingsForRecord::class, function ($job) use ($comment) {
-        return $job->record->is($comment);
-    });
+    Queue::assertPushed(GenerateEmbeddingsForRecord::class, fn ($job) => $job->record->is($comment));
 }); 
