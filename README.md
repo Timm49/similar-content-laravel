@@ -26,6 +26,21 @@ php artisan migrate
 
 ---
 
+## Configuration
+
+### OpenAI API Key
+
+By default, the package will use your application's default OpenAI API key. However, you can set a separate API key specifically for this package by adding the following to your `.env` file:
+
+```env
+SIMILAR_CONTENT_OPENAI_API_KEY=your-api-key-here
+```
+
+This is useful when you want to:
+- Use a different API key for embeddings than your main application
+- Track usage separately for embedding generation
+- Apply different rate limits or billing
+
 ## Usage
 
 ### Marking your models with embeddings
