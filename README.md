@@ -2,9 +2,9 @@
 
 Easily generate and manage content embeddings for your Laravel models, enabling content similarity and recommendation functionality powered by AI.
 
----
 
 ## Installation
+---
 
 Install via Composer:
 
@@ -24,16 +24,17 @@ Then run migrations:
 php artisan migrate
 ```
 
----
-
 ## Configuration
+---
 
 ### OpenAI API Key
 
-By default, the package will use your application's default OpenAI API key. However, you can set a separate API key specifically for this package by adding the following to your `.env` file:
+By default, the package will use your environment's default OpenAI API key 'OPENAI_API_KEY'. However, you can set a separate API key specifically for this package by adding the following to your `config/similar-content.php` file:
 
-```env
-SIMILAR_CONTENT_OPENAI_API_KEY=your-api-key-here
+```php
+[
+    'openai_api_key' => env('MY_CUSTOM_OPENAI_API_KEY'),
+]
 ```
 
 This is useful when you want to:
@@ -42,6 +43,7 @@ This is useful when you want to:
 - Apply different rate limits or billing
 
 ## Usage
+---
 
 ### Marking your models with embeddings
 
@@ -57,41 +59,39 @@ class Article extends Model
 }
 ```
 
-This automatically generates embeddings using a default transformation (concatenation of all fillable attributes).
+This automatically generates embeddings using a default transformation (concatenation of all fillable attributes) when running the generate command.
 
-### Using a custom Transformer (optional)
+### Customizing Embedding Data
 
-If you need custom embedding content, specify a transformer:
+By default, the package uses the `HasSimilarContentTrait` which generates embeddings from all model attributes. You can customize this behavior by overriding the `getEmbeddingData()` method:
 
 ```php
-use Timm49\SimilarContent\Attributes\HasEmbeddings;
-use App\Transformers\ArticleEmbeddingTransformer;
+use Timm49\LaravelSimilarContent\Traits\HasSimilarContentTrait;
 
-#[HasEmbeddings(transformer: ArticleEmbeddingTransformer::class)]
 class Article extends Model
 {
-    // ...
-}
-```
+    use HasSimilarContentTrait;
 
-Implement your custom transformer:
-
-```php
-use Timm49\SimilarContent\Contracts\EmbeddingTransformer;
-use Illuminate\Database\Eloquent\Model;
-
-class ArticleEmbeddingTransformer implements EmbeddingTransformer
-{
-    public function transform(Model $model): string
+    public function getEmbeddingData(): string
     {
-        return $model->title . "\n" . strip_tags($model->content);
+        // Only use title and content for embeddings
+        return $this->title . "\n" . $this->content;
+        
+        // Or use specific fields with custom formatting
+        // return "Title: {$this->title}\nSummary: {$this->summary}\nTags: " . implode(', ', $this->tags);
     }
 }
 ```
 
----
+This gives you full control over:
+- Which fields are included in the embedding
+- How the data is formatted
+- What text is used for similarity matching
+
+> 📘 It's very important to include the right data for the right embedding purposes. I will add some uesful links with more information on this later.
 
 ## Generating embeddings
+---
 
 Generate embeddings manually by running:
 
@@ -101,9 +101,8 @@ php artisan similar-content:generate-embeddings
 
 This command scans all marked models and generates embeddings accordingly.
 
----
-
 ## Configuration
+---
 
 Publish and customize the configuration file if needed:
 
@@ -113,25 +112,12 @@ php artisan vendor:publish --tag="similar-content-config"
 
 Customize your model discovery paths, default transformer, and other settings in the published config file.
 
----
-
-## Advanced usage
-
-Access embeddings directly on your models:
-
-```php
-$article = Article::first();
-$embedding = $article->embedding; // returns embedding vector
-```
-
----
-
 ## Contributing
+---
 
 Contributions are welcome! Please submit issues and pull requests.
 
----
-
 ## License
+---
 
 MIT © Timm49
