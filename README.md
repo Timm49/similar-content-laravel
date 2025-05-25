@@ -4,7 +4,7 @@ Easily generate and manage content embeddings for your Laravel models, enabling 
 
 
 ## Installation
----
+
 
 Install via Composer:
 
@@ -25,7 +25,7 @@ php artisan migrate
 ```
 
 ## Configuration
----
+
 
 ### OpenAI API Key
 
@@ -43,7 +43,7 @@ This is useful when you want to:
 - Apply different rate limits or billing
 
 ## Usage
----
+
 
 ### Marking your models with embeddings
 
@@ -91,7 +91,7 @@ This gives you full control over:
 > 📘 It's very important to include the right data for the right embedding purposes. I will add some uesful links with more information on this later.
 
 ## Generating embeddings
----
+
 
 Generate embeddings manually by running:
 
@@ -102,7 +102,7 @@ php artisan similar-content:generate-embeddings
 This command scans all marked models and generates embeddings accordingly.
 
 ## Configuration
----
+
 
 Publish and customize the configuration file if needed:
 
@@ -113,11 +113,11 @@ php artisan vendor:publish --tag="similar-content-config"
 Customize your model discovery paths, default transformer, and other settings in the published config file.
 
 ## Contributing
----
+
 
 Contributions are welcome! Please submit issues and pull requests.
 
 ## License
----
+
 
 MIT © Timm49
