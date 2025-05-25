@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\DB;
 
 class SimilarContentContext
 {
-    private Model $model;
-
-    public function __construct(Model $model)
-    {
-        $this->model = $model;
+    public function __construct(
+        private Model $model
+    ) {
     }
 
     public function getSimilarContent(): array
@@ -46,7 +44,6 @@ class SimilarContentContext
             );
         }
 
-        // Sort results by similarity score in descending order
         usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
 
         return $results;
