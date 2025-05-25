@@ -7,8 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Support\Facades\DB;
+use Timm49\LaravelSimilarContent\Services\SimilarContentService;
 
 class GenerateEmbeddingsForRecord implements ShouldQueue
 {
@@ -21,18 +21,10 @@ class GenerateEmbeddingsForRecord implements ShouldQueue
         $this->record = $record;
     }
 
-    public function handle()
+    public function handle(SimilarContentService $embeddingService)
     {
-        $input = $this->record->getEmbeddingData();
-
-        $response = OpenAI::embeddings()->create([
-            'model' => 'text-embedding-3-small',
-            'input' => $input,
-        ]);
-
-        $embedding = $response['data'][0]['embedding'];
-
-        // Store the embedding in the database
+        $embedding = $embeddingService->generateEmbeddings($this->record->getEmbeddingData());
+    
         DB::table('embeddings')->insert([
             'embeddable_type' => get_class($this->record),
             'embeddable_id' => $this->record->id,
