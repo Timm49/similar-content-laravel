@@ -9,6 +9,11 @@ class SimilarContent
 {
     private static array $registeredModels = [];
 
+    public static function for(Model $model): SimilarContentContext
+    {
+        return new SimilarContentContext($model);
+    }
+
     public static function getRegisteredModels(?string $path = null): array
     {
         self::$registeredModels = [];
