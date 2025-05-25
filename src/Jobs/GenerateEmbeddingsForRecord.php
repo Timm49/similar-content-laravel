@@ -22,14 +22,17 @@ class GenerateEmbeddingsForRecord implements ShouldQueue
 
     public function handle(SimilarContentService $embeddingService)
     {
-        DB::table('embeddings')->insert([
-            'embeddable_type' => get_class($this->record),
-            'embeddable_id' => $this->record->id,
-            'data' => json_encode($embeddingService->generateEmbeddings(
-                $this->record->getEmbeddingData()
-            )),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        DB::table('embeddings')->updateOrInsert(
+            [
+                'embeddable_type' => get_class($this->record),
+                'embeddable_id' => $this->record->id,
+            ],
+            [
+                'data' => json_encode($embeddingService->generateEmbeddings(
+                    $this->record->getEmbeddingData()
+                )),
+                'updated_at' => now(),
+            ]
+        );
     }
 } 

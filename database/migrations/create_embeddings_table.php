@@ -10,7 +10,8 @@ return new class extends Migration
     {
         Schema::create('embeddings', function (Blueprint $table) {
             $table->id();
-            $table->morphs('embeddable');
+            $table->unsignedBigInteger('embeddable_id');
+            $table->string('embeddable_type');
             $table->json('data');
             $table->timestamps();
         });

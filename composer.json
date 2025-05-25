@@ -14,8 +14,7 @@
         }
     },
     "require": {
-        "php": "^8.1",
-        "openai-php/laravel": "^0.10.2"
+        "php": "^8.1"
     },
     "require-dev": {
         "pestphp/pest": "^2.0",
