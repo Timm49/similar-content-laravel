@@ -5,14 +5,10 @@ namespace Timm49\LaravelSimilarContent\Tests\Jobs;
 use Illuminate\Support\Facades\DB;
 use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForRecord;
 use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
-use Illuminate\Support\Facades\Artisan;
 use Timm49\LaravelSimilarContent\Services\SimilarContentService;
 use Mockery;
 
-
 it('creates an embedding record for the article', function () {
-
-     Artisan::call('migrate:fresh');
      
      $article = Article::create([
          'title' => 'Test Article',
@@ -31,5 +27,4 @@ it('creates an embedding record for the article', function () {
     expect($embeddingRecord)->not->toBeNull();
     expect($embeddingRecord->embeddable_type)->toBe(Article::class);
     expect($embeddingRecord->data)->toBeJson();
-
-}); 
+});

@@ -3,10 +3,9 @@
 namespace Timm49\LaravelSimilarContent\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Timm49\LaravelSimilarContent\Providers\SimilarContentProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
 
 class TestCase extends Orchestra
 {
@@ -17,7 +16,7 @@ class TestCase extends Orchestra
         parent::setUp();
         
         $this->loadMigrationsFrom(__DIR__.'/Fixtures/Database/Migrations');
-        
+        Artisan::call('migrate:fresh');
     }
 
     protected function getPackageProviders($app)

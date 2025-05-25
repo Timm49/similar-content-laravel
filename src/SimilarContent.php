@@ -2,10 +2,8 @@
 
 namespace Timm49\LaravelSimilarContent;
 
-use App\Interfaces\ModelEmbed;
 use Illuminate\Database\Eloquent\Model;
 use Timm49\LaravelSimilarContent\Attributes\HasSimilarContent;
-use Timm49\LaravelSimilarContent\ValueObjects\EmbedModal;
 
 class SimilarContent
 {
