@@ -12,12 +12,14 @@
 ### 🚨 Needed for MVP
 * [ ] Add `SIMILAR_CONTENT_OPENAI_API_KEY` to config to allow a separate OpenAI key from the app
 * [ ] Add `php artisan similar-content:install` command to publish config/migrations and show helpful setup reminders
-* [ ] README: add generic embedding/vector info + reference info
+* [ ] README: explain what happens in intro (storing in database)
 * [ ] README: instructions about manually generating embeddings
 * [ ] README: instructions about using the trait
 * [ ] README: add instructions about using this Artisan command during installation "similar-content:install" 
-* [ ] README: update info about API key depending on how we solve that
-  
+* [ ] throw exception api key missing
+* [ ] move api request to own class
+* [ ] use this new class to manually call generate SimilarData::generate($article)
+
 ### 📝 Optional / Planned
 
 **🔁 Core Package Enhancements**
@@ -28,7 +30,7 @@
 * [ ] Support for transformers
 * [ ] Per-user personalization
 * [ ] Configurable model paths
-* [ ] Admin UI (optional interface or plugin)
+* [ ] Register models via class or factory
 * [ ] In-depth caching
 * [ ] Add event dispatching for lifecycle hooks
 
