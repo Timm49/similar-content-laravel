@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class SimilarContentService
 {
-    public function generateEmbeddings(Model $model): array
+    private function generateEmbeddings(Model $model): array
     {
         $input = method_exists($model, 'getEmbeddingData')
             ? $model->getEmbeddingData()

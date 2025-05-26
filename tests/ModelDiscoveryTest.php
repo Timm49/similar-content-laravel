@@ -6,7 +6,7 @@ use Timm49\LaravelSimilarContent\SimilarContent;
 use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
 use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Comment;
 
-test('discovers models with HasSimilarContent attribute', function () {
+test('discovers models with HasEmbeddings attribute', function () {
     $modelsPath = __DIR__ . '/Fixtures/Models';
     $models = SimilarContent::getRegisteredModels($modelsPath);
     

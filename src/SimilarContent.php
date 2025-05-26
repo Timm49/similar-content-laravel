@@ -3,7 +3,8 @@
 namespace Timm49\LaravelSimilarContent;
 
 use Illuminate\Database\Eloquent\Model;
-use Timm49\LaravelSimilarContent\Attributes\HasSimilarContent;
+use Timm49\LaravelSimilarContent\Attributes\HasEmbeddings;
+use Timm49\LaravelSimilarContent\SimilarContentContext;
 
 class SimilarContent
 {
@@ -31,7 +32,7 @@ class SimilarContent
             }
 
             $reflection = new \ReflectionClass($className);
-            $attributes = $reflection->getAttributes(HasSimilarContent::class);
+            $attributes = $reflection->getAttributes(HasEmbeddings::class);
 
             if (! empty($attributes)) {
                 self::$registeredModels[] = $className;

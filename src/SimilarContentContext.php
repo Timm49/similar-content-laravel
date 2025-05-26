@@ -4,12 +4,18 @@ namespace Timm49\LaravelSimilarContent;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Timm49\LaravelSimilarContent\Services\SimilarContentService;
 
 class SimilarContentContext
 {
     public function __construct(
-        private Model $model
+        private Model $model,
     ) {
+    }
+
+    public function generateEmbeddings(): void
+    {
+        app(SimilarContentService::class)->generateAndStoreEmbeddings($this->model);
     }
 
     public function getSimilarContent(): array

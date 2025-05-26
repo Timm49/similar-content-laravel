@@ -3,13 +3,13 @@
 namespace Timm49\LaravelSimilarContent\Tests\Fixtures\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Timm49\LaravelSimilarContent\Attributes\HasSimilarContent;
-use Timm49\LaravelSimilarContent\Traits\HasSimilarContentTrait;
+use Timm49\LaravelSimilarContent\Attributes\HasEmbeddings;
+use Timm49\LaravelSimilarContent\Traits\HasSimilarContent;
 
-#[HasSimilarContent]
+#[HasEmbeddings]
 class Comment extends Model
 {
-    use HasSimilarContentTrait;
+    use HasSimilarContent;
 
     protected $guarded = [];
 } 

@@ -28,12 +28,12 @@ class SimilarContentProvider extends ServiceProvider
             ]);
 
             $this->publishes([
-                __DIR__.'/../../config/similar_content.php' => config_path('similar_content.php'),
-            ], 'similar-content-configuration');
-            
-            $this->publishes([
-                __DIR__.'/../../database/migrations/create_embeddings_table.php' => database_path('migrations/'.date('Y_m_d_His').'_create_embeddings_table.php'),
+                __DIR__.'/../../database/migrations/create_embeddings_table.php' => database_path('migrations/create_embeddings_table.php'),
             ], 'similar-content-migrations');
+            
+            // $this->publishes([
+            //     __DIR__.'/../../database/migrations/create_embeddings_table.php' => database_path('migrations/'.date('Y_m_d_His').'_create_embeddings_table.php'),
+            // ], 'similar-content-migrations');
         }        
     }
 }

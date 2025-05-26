@@ -2,9 +2,10 @@
 
 Easily generate and manage content embeddings for your Laravel models, enabling content similarity and recommendation functionality powered by AI.
 
+### What happens:
+- It creates an embedding for a model
 
 ## Installation
-
 
 Install via Composer:
 
@@ -15,7 +16,7 @@ composer require timm49/similar-content
 Publish configuration and migrations:
 
 ```bash
-php artisan vendor:publish --provider="Timm49\SimilarContent\SimilarContentServiceProvider"
+php artisan vendor:publish --provider="Timm49\LaravelSimilarContent\Providers\SimilarContentProvider"
 ```
 
 Then run migrations:
@@ -25,7 +26,6 @@ php artisan migrate
 ```
 
 ## Configuration
-
 
 ### OpenAI API Key
 
@@ -37,20 +37,14 @@ By default, the package will use your environment's default OpenAI API key 'OPEN
 ]
 ```
 
-This is useful when you want to:
-- Use a different API key for embeddings than your main application
-- Track usage separately for embedding generation
-- Apply different rate limits or billing
-
 ## Usage
-
 
 ### Marking your models with embeddings
 
 Simply annotate your Eloquent model with the `#[HasEmbeddings]` attribute:
 
 ```php
-use Timm49\SimilarContent\Attributes\HasEmbeddings;
+use Timm49\LaravelSimilarContent\Attributes\HasEmbeddings;
 
 #[HasEmbeddings]
 class Article extends Model
@@ -63,14 +57,14 @@ This automatically generates embeddings using a default transformation (concaten
 
 ### Customizing Embedding Data
 
-By default, the package uses the `HasSimilarContentTrait` which generates embeddings from all model attributes. You can customize this behavior by overriding the `getEmbeddingData()` method:
+The package ships with a `HasSimilarContent` trait which you can use in your models. You can customize the default behavior by overriding the `getEmbeddingData()` method:
 
 ```php
-use Timm49\LaravelSimilarContent\Traits\HasSimilarContentTrait;
+use Timm49\LaravelSimilarContent\Traits\HasSimilarContent;
 
 class Article extends Model
 {
-    use HasSimilarContentTrait;
+    use HasSimilarContent;
 
     public function getEmbeddingData(): string
     {
@@ -90,8 +84,23 @@ This gives you full control over:
 
 > 📘 It's very important to include the right data for the right embedding purposes. I will add some uesful links with more information on this later.
 
-## Generating embeddings
+### Manual Embedding Generation
 
+While the package provides an artisan command to generate embeddings for all marked models, you can also generate embeddings manually for specific models using the fluent interface:
+
+```php
+use Timm49\LaravelSimilarContent\SimilarContent;
+
+// Generate and store embeddings for a model
+SimilarContent::for($article)->generateEmbeddings();
+
+// This is useful when you want to:
+// - Generate embeddings after specific model updates
+// - Control when embeddings are generated
+// - Generate embeddings for specific models only
+```
+
+## Generating embeddings
 
 Generate embeddings manually by running:
 
@@ -103,7 +112,6 @@ This command scans all marked models and generates embeddings accordingly.
 
 ## Configuration
 
-
 Publish and customize the configuration file if needed:
 
 ```bash
@@ -114,10 +122,8 @@ Customize your model discovery paths, default transformer, and other settings in
 
 ## Contributing
 
-
 Contributions are welcome! Please submit issues and pull requests.
 
 ## License
-
 
 MIT © Timm49

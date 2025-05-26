@@ -1,17 +1,23 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests;
+namespace Timm49\LaravelSimilarContent\Tests\Jobs;
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Queue;
 use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForRecord;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Queue;
 use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Comment;
+use Illuminate\Support\Facades\Http;
 
-it('dispatches a job for each model with HasSimilarContent attribute', function () {
+beforeEach(function () {
+    Artisan::call('migrate:fresh');
+    Http::fake();
     Queue::fake();
+});
+
+it('dispatches a job for each model with HasEmbeddings attribute', function () {
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
-    
+
     $comment = Comment::create([
         'content' => 'This is a test comment',
     ]);

@@ -2,7 +2,7 @@
 
 namespace Timm49\LaravelSimilarContent\Traits;
 
-trait HasSimilarContentTrait
+trait HasSimilarContent
 {
     public function getEmbeddingData(): string
     {
