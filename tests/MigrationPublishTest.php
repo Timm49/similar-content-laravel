@@ -8,7 +8,7 @@ afterEach(function () {
     File::delete(glob(database_path('migrations/*_create_embeddings_table.php')));
 });
 it('publishes the migration file', function () {
-    $migrationPath = database_path('migrations/'.date('Y_m_d_His').'_create_embeddings_table.php');
+    $migrationPath = database_path('migrations/create_embeddings_table.php');
     
     Artisan::call('vendor:publish', [
         '--provider' => 'Timm49\\LaravelSimilarContent\\Providers\\SimilarContentProvider',

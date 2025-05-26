@@ -5,6 +5,7 @@ namespace Timm49\LaravelSimilarContent\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SimilarContentService
 {
@@ -13,6 +14,8 @@ class SimilarContentService
         $input = method_exists($model, 'getEmbeddingData')
             ? $model->getEmbeddingData()
             : $model->toJson();
+
+        Log::info($input);
         
         $response = Http::withToken(config('similar_content.openai_api_key'))
             ->post('https://api.openai.com/v1/embeddings', [
