@@ -23,7 +23,7 @@ Retrieve similar content for a specific record and use it for a recommendation s
 Install via Composer:
 
 ```bash
-composer require timm49/similar-content
+composer require timm49/similar-content-laravel
 ```
 
 Run the installation command:
