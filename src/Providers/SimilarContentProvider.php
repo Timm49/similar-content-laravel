@@ -3,8 +3,9 @@
 namespace Timm49\LaravelSimilarContent\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Timm49\LaravelSimilarContent\SimilarContent;
 use Timm49\LaravelSimilarContent\Console\Commands\GenerateEmbeddingsCommand;
+use Timm49\LaravelSimilarContent\Console\Commands\InstallSimilarContentCommand;
+use Timm49\LaravelSimilarContent\SimilarContent;
 
 class SimilarContentProvider extends ServiceProvider
 {
@@ -25,15 +26,12 @@ class SimilarContentProvider extends ServiceProvider
 
             $this->commands([
                 GenerateEmbeddingsCommand::class,
+                InstallSimilarContentCommand::class,
             ]);
 
             $this->publishes([
                 __DIR__.'/../../database/migrations/create_embeddings_table.php' => database_path('migrations/create_embeddings_table.php'),
             ], 'similar-content-migrations');
-            
-            // $this->publishes([
-            //     __DIR__.'/../../database/migrations/create_embeddings_table.php' => database_path('migrations/'.date('Y_m_d_His').'_create_embeddings_table.php'),
-            // ], 'similar-content-migrations');
         }        
     }
 }
