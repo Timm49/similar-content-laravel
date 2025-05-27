@@ -26,6 +26,7 @@ Install via Composer:
 composer require timm49/similar-content-laravel
 ```
 
+
 Run the installation command:
 
 ```bash
