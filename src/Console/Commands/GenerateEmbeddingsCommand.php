@@ -14,6 +14,11 @@ class GenerateEmbeddingsCommand extends Command
     public function handle()
     {
         foreach (SimilarContent::getRegisteredModels() as $model) {
+            $count = $model::count();
+            if (! $this->confirm("This will generate embeddings for {$count} records in {$model}. Do you want to continue?", true)) {
+                $this->warn("Skipped model: {$model}");
+                continue;
+            }
             $model::all()->each(fn ($record) => GenerateEmbeddingsForRecord::dispatch($record));
             $this->info("Generated embeddings for model: " . $model);
         }
