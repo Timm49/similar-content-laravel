@@ -77,11 +77,7 @@ class Article extends Model
 
     public function getEmbeddingData(): string
     {
-        // Only use title and content for embeddings
         return $this->title . "\n" . $this->content;
-  
-        // Or use specific fields with custom formatting
-        // return "Title: {$this->title}\nSummary: {$this->summary}\nTags: " . implode(', ', $this->tags);
     }
 }
 ```
@@ -97,9 +93,16 @@ This gives you full control over:
 ## Generating embeddings
 
 Generate embeddings for all models using the #[HasEmbeddings] attribute.
+> This will only generate embeddings for records which don't have any embeddings.
 
 ```bash
 php artisan similar-content:generate-embeddings
+```
+
+To re-generate existing embeddings, use the --force flag:
+
+```bash
+php artisan similar-content:generate-embeddings --force
 ```
 
 > ⚠ This will generate embeddings for ALL records of ALL models with the attribute. Depending on the amount of records in your database this can potentially be a long/expensive process since it will make a lot of API requests.
@@ -109,15 +112,7 @@ php artisan similar-content:generate-embeddings
 While the package provides an artisan command to generate embeddings for all marked models, you can also generate embeddings manually for specific models using the fluent interface:
 
 ```php
-use Timm49\LaravelSimilarContent\SimilarContent;
-
-// Generate and store embeddings for a model
-SimilarContent::for($article)->generateEmbeddings();
-
-// This is useful when you want to:
-// - Generate embeddings after specific model updates
-// - Control when embeddings are generated
-// - Generate embeddings for specific models only
+SimilarContent::for($article)->generateAndStoreEmbeddings();
 ```
 
 ## Retrieving similar content

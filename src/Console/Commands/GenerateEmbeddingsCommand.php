@@ -3,7 +3,6 @@
 namespace Timm49\LaravelSimilarContent\Console\Commands;
 
 use Illuminate\Console\Command;
-use Timm49\LaravelSimilarContent\Jobs\GenerateEmbeddingsForRecord;
 use Timm49\LaravelSimilarContent\Services\SimilarContentService;
 use Timm49\LaravelSimilarContent\SimilarContent;
 

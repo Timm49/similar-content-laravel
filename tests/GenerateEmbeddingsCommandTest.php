@@ -2,13 +2,16 @@
 
 namespace Timm49\LaravelSimilarContent\Tests\Jobs;
 
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Queue;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Comment;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Timm49\LaravelSimilarContent\Services\SimilarContentService;
+use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
+use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Comment;
 
 beforeEach(function () {
+    Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
     Artisan::call('migrate:fresh');
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
@@ -21,7 +24,6 @@ beforeEach(function () {
 });
 
 it('it asks for a confirmation to generate embeddings for X amount of records', function () {
-    Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
 
     Comment::create(['content' => 'This is a test comment',]);
     Comment::create(['content' => 'This is also a test comment',]);
@@ -33,9 +35,29 @@ it('it asks for a confirmation to generate embeddings for X amount of records', 
 });
 
 it('it skips records which already have embeddings', function () {
-    Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
 
     $this->artisan('similar-content:generate-embeddings')
         ->expectsOutputToContain('No records without embeddings found for model: Timm49\\LaravelSimilarContent\\Tests\\Fixtures\\Models\\Comment')
         ->assertExitCode(0);
+});
+
+
+it('creates an embedding record for the article', function () {
+    // Given
+    Article::create([
+        'title' => 'Test Article',
+        'content' => 'This is a test article',
+    ]);
+
+    $mock = \Mockery::mock(SimilarContentService::class);
+    $mock->shouldReceive('generateAndStoreEmbeddings');
+
+    $this->app->instance(SimilarContentService::class, $mock);
+
+    // When
+    $this->artisan('similar-content:generate-embeddings --force')
+        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\LaravelSimilarContent\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
+
+    // Then
+    $mock->shouldHaveReceived('generateAndStoreEmbeddings');
 });

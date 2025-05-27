@@ -13,7 +13,7 @@ class SimilarContentContext
     ) {
     }
 
-    public function generateEmbeddings(): void
+    public function generateAndStoreEmbeddings(): void
     {
         app(SimilarContentService::class)->generateAndStoreEmbeddings($this->model);
     }
