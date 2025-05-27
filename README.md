@@ -18,6 +18,24 @@ Retrieve similar items for any model like this:
 SimilarContent::for($model)->generateEmbeddings();
 ```
 
+## ⚠️ Database & Performance Notes
+
+This package **does not require a vector database** such as `pgvector`, `Pinecone`, or `Weaviate`. Instead, it stores embeddings in a regular database table (compatible with MySQL, PostgreSQL, etc.) and performs similarity comparisons in PHP.
+
+**This approach has pros and cons:**
+
+#### ✅ Benefits
+
+* No need to set up or maintain a specialized vector database.
+* Works out-of-the-box with your existing Laravel database setup.
+* Easier to install, debug, and understand for most Laravel developers.
+
+#### ⚠️ Considerations
+
+* Since similarity comparisons are done in memory, **the package loads all embeddings of the same model** to calculate similarity scores.
+* **This may cause performance issues** if your application contains a large number of embeddings for a given model.
+* Not recommended for large-scale applications where millions of records need to be compared regularly. In such cases, a dedicated vector store (e.g., pgvector, Qdrant, Pinecone) may be more suitable.
+
 ## Installation
 
 Install via Composer:
@@ -79,7 +97,7 @@ class Article extends Model
     {
         // Only use title and content for embeddings
         return $this->title . "\n" . $this->content;
-    
+  
         // Or use specific fields with custom formatting
         // return "Title: {$this->title}\nSummary: {$this->summary}\nTags: " . implode(', ', $this->tags);
     }
@@ -128,11 +146,47 @@ Now you can retrieve similar content for a specific record like so:
 SimilarContent::for($article)->getSimilarContent();
 ```
 
+This will return an **array of `SimilarContentResult` objects**, each representing a similar record and its similarity score.
+
+### `SimilarContentResult` structure
+
+```php
+class SimilarContentResult
+{
+    public function __construct(
+        public readonly string $sourceType,      // Class name of the original model
+        public readonly string $sourceId,        // ID of the original model
+        public readonly string $targetType,      // Class name of the similar model
+        public readonly string $targetId,        // ID of the similar model
+        public readonly float $similarityScore,  // Value between 0 and 1 (1 = identical)
+    ) {
+    }
+}
+```
+
+You can loop through the results like this:
+
+```php
+$results = SimilarContent::for($article)->getSimilarContent();
+
+foreach ($results as $result) {
+    echo "Found similar content (score: {$result->similarityScore}) with ID {$result->targetId}";
+}
+```
+
 ## Useful resources
 
 Here's some good resources to get you started:
 
 - [Beginner Friendly Deep Dive On Vector Databases](https://www.dailydoseofds.com/a-beginner-friendly-and-comprehensive-deep-dive-on-vector-databases) Good to get you started
+- [Evaluating Vector Databases 101](https://medium.com/tr-labs-ml-engineering-blog/evaluating-vector-databases-101-5f87a2366bb1) – A comprehensive guide to understanding vector DB architecture, indexing, filtering, ANN algorithms, and how to evaluate different options for production use.
+- [OpenAI Embeddings Documentation](https://platform.openai.com/docs/guides/embeddings) Official OpenAI docs
+
+## Alternatives
+
+Similar packages with a slightly different approach:
+
+- [5am-code/ada-laravel](https://github.com/5am-code/ada-laravel) Uses vector database
 
 ## Contributing
 
