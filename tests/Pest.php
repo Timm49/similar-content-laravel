@@ -1,6 +1,6 @@
 <?php
 
-use Timm49\LaravelSimilarContent\Tests\TestCase;
+use Timm49\SimilarContentLaravel\Tests\TestCase;
 
 uses(TestCase::class)->in('.');
 /*

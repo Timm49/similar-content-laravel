@@ -1,6 +1,6 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests;
+namespace Timm49\SimilarContentLaravel\Tests;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;

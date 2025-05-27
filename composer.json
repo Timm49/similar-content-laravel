@@ -5,12 +5,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Timm49\\LaravelSimilarContent\\": "src/"
+            "Timm49\\SimilarContentLaravel\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Timm49\\LaravelSimilarContent\\Tests\\": "tests/"
+            "Timm49\\SimilarContentLaravel\\Tests\\": "tests/"
         }
     },
     "require": {
@@ -34,7 +34,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Timm49\\LaravelSimilarContent\\Providers\\SimilarContentProvider"
+                "Timm49\\SimilarContentLaravel\\Providers\\SimilarContentProvider"
             ]
         }
     },

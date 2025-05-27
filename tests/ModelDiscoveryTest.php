@@ -1,10 +1,10 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests;
+namespace Timm49\SimilarContentLaravel\Tests;
 
-use Timm49\LaravelSimilarContent\SimilarContent;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Comment;
+use Timm49\SimilarContentLaravel\SimilarContent;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
 
 test('discovers models with HasEmbeddings attribute', function () {
     $modelsPath = __DIR__ . '/Fixtures/Models';

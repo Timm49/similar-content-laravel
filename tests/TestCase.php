@@ -1,10 +1,10 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests;
+namespace Timm49\SimilarContentLaravel\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Timm49\LaravelSimilarContent\Providers\SimilarContentProvider;
+use Timm49\SimilarContentLaravel\Providers\SimilarContentProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra

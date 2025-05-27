@@ -1,10 +1,10 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent;
+namespace Timm49\SimilarContentLaravel;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Timm49\LaravelSimilarContent\Services\SimilarContentService;
+use Timm49\SimilarContentLaravel\Services\SimilarContentService;
 
 class SimilarContentContext
 {

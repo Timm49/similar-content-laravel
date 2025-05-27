@@ -1,6 +1,6 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Console\Commands;
+namespace Timm49\SimilarContentLaravel\Console\Commands;
 
 use Illuminate\Console\Command;
 
@@ -15,7 +15,7 @@ class InstallSimilarContentCommand extends Command
         $this->info('🔧 Publishing migration file...');
 
         $this->callSilent('vendor:publish', [
-            '--provider' => "Timm49\\LaravelSimilarContent\\Providers\\SimilarContentProvider",
+            '--provider' => "Timm49\\SimilarContentLaravel\\Providers\\SimilarContentProvider",
         ]);
 
         $this->info('✅ Migration file published.');

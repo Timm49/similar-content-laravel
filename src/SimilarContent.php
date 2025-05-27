@@ -1,10 +1,10 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent;
+namespace Timm49\SimilarContentLaravel;
 
 use Illuminate\Database\Eloquent\Model;
-use Timm49\LaravelSimilarContent\Attributes\HasEmbeddings;
-use Timm49\LaravelSimilarContent\SimilarContentContext;
+use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
+use Timm49\SimilarContentLaravel\SimilarContentContext;
 
 class SimilarContent
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Providers;
+namespace Timm49\SimilarContentLaravel\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Timm49\LaravelSimilarContent\Console\Commands\GenerateEmbeddingsCommand;
-use Timm49\LaravelSimilarContent\Console\Commands\InstallSimilarContentCommand;
-use Timm49\LaravelSimilarContent\SimilarContent;
+use Timm49\SimilarContentLaravel\Console\Commands\GenerateEmbeddingsCommand;
+use Timm49\SimilarContentLaravel\Console\Commands\InstallSimilarContentCommand;
+use Timm49\SimilarContentLaravel\SimilarContent;
 
 class SimilarContentProvider extends ServiceProvider
 {

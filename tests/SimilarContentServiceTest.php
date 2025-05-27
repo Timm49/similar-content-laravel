@@ -1,14 +1,14 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests\Jobs;
+namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\DB;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
-use Timm49\LaravelSimilarContent\Services\SimilarContentService;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
+use Timm49\SimilarContentLaravel\Services\SimilarContentService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Post;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Post;
 
 beforeEach(function () {
     

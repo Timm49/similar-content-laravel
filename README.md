@@ -56,7 +56,7 @@ SIMILAR_CONTENT_OPENAI_API_KEY=some-key
 Simply annotate your Eloquent model with the `#[HasEmbeddings]` attribute. This automatically generates embeddings using a default transformation (concatenation of all fillable attributes) when running the artisan command.
 
 ```php
-use Timm49\LaravelSimilarContent\Attributes\HasEmbeddings;
+use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 
 #[HasEmbeddings]
 class Article extends Model
@@ -70,7 +70,7 @@ class Article extends Model
 The package ships with a `HasSimilarContent` trait which you can use in your models. You can customize the default behavior by overriding the `getEmbeddingData()` method:
 
 ```php
-use Timm49\LaravelSimilarContent\Traits\HasSimilarContent;
+use Timm49\SimilarContentLaravel\Traits\HasSimilarContent;
 
 class Article extends Model
 {

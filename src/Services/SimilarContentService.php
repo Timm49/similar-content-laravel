@@ -1,6 +1,6 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Services;
+namespace Timm49\SimilarContentLaravel\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;

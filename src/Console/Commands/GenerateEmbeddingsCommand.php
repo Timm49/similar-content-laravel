@@ -1,10 +1,10 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Console\Commands;
+namespace Timm49\SimilarContentLaravel\Console\Commands;
 
 use Illuminate\Console\Command;
-use Timm49\LaravelSimilarContent\Services\SimilarContentService;
-use Timm49\LaravelSimilarContent\SimilarContent;
+use Timm49\SimilarContentLaravel\Services\SimilarContentService;
+use Timm49\SimilarContentLaravel\SimilarContent;
 
 class GenerateEmbeddingsCommand extends Command
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests\Jobs;
+namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
-use Timm49\LaravelSimilarContent\Services\SimilarContentService;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Comment;
+use Timm49\SimilarContentLaravel\Services\SimilarContentService;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
 
 beforeEach(function () {
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
@@ -30,14 +30,14 @@ it('it asks for a confirmation to generate embeddings for X amount of records', 
     Comment::create(['content' => 'This is another test comment',]);
 
     $this->artisan('similar-content:generate-embeddings')
-        ->expectsConfirmation('This will generate embeddings for 3 records in Timm49\\LaravelSimilarContent\\Tests\\Fixtures\\Models\\Comment. Do you want to continue?', 'yes')
+        ->expectsConfirmation('This will generate embeddings for 3 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment. Do you want to continue?', 'yes')
         ->assertExitCode(0);
 });
 
 it('it skips records which already have embeddings', function () {
 
     $this->artisan('similar-content:generate-embeddings')
-        ->expectsOutputToContain('No records without embeddings found for model: Timm49\\LaravelSimilarContent\\Tests\\Fixtures\\Models\\Comment')
+        ->expectsOutputToContain('No records without embeddings found for model: Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment')
         ->assertExitCode(0);
 });
 
@@ -56,7 +56,7 @@ it('creates an embedding record for the article', function () {
 
     // When
     $this->artisan('similar-content:generate-embeddings --force')
-        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\LaravelSimilarContent\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
+        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
 
     // Then
     $mock->shouldHaveReceived('generateAndStoreEmbeddings');

@@ -1,6 +1,6 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent;
+namespace Timm49\SimilarContentLaravel;
 
 class SimilarContentResult
 {

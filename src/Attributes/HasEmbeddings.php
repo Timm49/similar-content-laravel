@@ -1,6 +1,6 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Attributes;
+namespace Timm49\SimilarContentLaravel\Attributes;
 
 use Attribute;
 

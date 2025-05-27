@@ -1,6 +1,6 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Traits;
+namespace Timm49\SimilarContentLaravel\Traits;
 
 trait HasSimilarContent
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests;
+namespace Timm49\SimilarContentLaravel\Tests;
 
-use Timm49\LaravelSimilarContent\SimilarContent;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
+use Timm49\SimilarContentLaravel\SimilarContent;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
@@ -12,7 +12,7 @@ it('returns a SimilarContentContext instance when calling for()', function () {
     
     $result = SimilarContent::for($article);
     
-    expect($result)->toBeInstanceOf(\Timm49\LaravelSimilarContent\SimilarContentContext::class);
+    expect($result)->toBeInstanceOf(\Timm49\SimilarContentLaravel\SimilarContentContext::class);
 });
 
 it('returns empty array when getting similar content', function () {

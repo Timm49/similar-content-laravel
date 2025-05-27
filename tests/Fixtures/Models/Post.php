@@ -1,6 +1,6 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests\Fixtures\Models;
+namespace Timm49\SimilarContentLaravel\Tests\Fixtures\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

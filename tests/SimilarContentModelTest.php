@@ -1,11 +1,11 @@
 <?php
 
-namespace Timm49\LaravelSimilarContent\Tests;
+namespace Timm49\SimilarContentLaravel\Tests;
 
 use Illuminate\Support\Facades\DB;
-use Timm49\LaravelSimilarContent\SimilarContentContext;
-use Timm49\LaravelSimilarContent\SimilarContentResult;
-use Timm49\LaravelSimilarContent\Tests\Fixtures\Models\Article;
+use Timm49\SimilarContentLaravel\SimilarContentContext;
+use Timm49\SimilarContentLaravel\SimilarContentResult;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 it('returns similar content results', function () {
