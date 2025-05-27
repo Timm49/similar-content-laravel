@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Timm49\LaravelSimilarContent\Services\SimilarContentService;
 
 class GenerateEmbeddingsForRecord implements ShouldQueue
