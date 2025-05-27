@@ -16,11 +16,7 @@ Use the built-in Artisan command to generate embeddings for all existing records
 
 **3. Get similar content**
 
-Retrieve similar items for any model like this:
-
-```php
-SimilarContent::for($model)->generateEmbeddings();
-```
+Retrieve similar content for a specific record and use it for a recommendation section.
 
 ## Installation
 
