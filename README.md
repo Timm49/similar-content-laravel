@@ -2,6 +2,8 @@
 
 Easily generate and manage content embeddings for your Laravel models, enabling content similarity and recommendation functionality powered by AI.
 
+Example News Feed Application using this package: [Timm49/example-app-similar-content](https://github.com/Timm49/example-app-similar-content)  
+
 ### What this package does
 
 **1. Mark your models**
@@ -17,24 +19,6 @@ Retrieve similar items for any model like this:
 ```php
 SimilarContent::for($model)->generateEmbeddings();
 ```
-
-## ⚠️ Database & Performance Notes
-
-This package **does not require a vector database** such as `pgvector`, `Pinecone`, or `Weaviate`. Instead, it stores embeddings in a regular database table (compatible with MySQL, PostgreSQL, etc.) and performs similarity comparisons in PHP.
-
-**This approach has pros and cons:**
-
-#### ✅ Benefits
-
-* No need to set up or maintain a specialized vector database.
-* Works out-of-the-box with your existing Laravel database setup.
-* Easier to install, debug, and understand for most Laravel developers.
-
-#### ⚠️ Considerations
-
-* Since similarity comparisons are done in memory, **the package loads all embeddings of the same model** to calculate similarity scores.
-* **This may cause performance issues** if your application contains a large number of embeddings for a given model.
-* Not recommended for large-scale applications where millions of records need to be compared regularly. In such cases, a dedicated vector store (e.g., pgvector, Qdrant, Pinecone) may be more suitable.
 
 ## Installation
 
@@ -173,6 +157,25 @@ foreach ($results as $result) {
     echo "Found similar content (score: {$result->similarityScore}) with ID {$result->targetId}";
 }
 ```
+
+## ⚠️ Database & Performance Notes
+
+This package **does not require a vector database** such as `pgvector`, `Pinecone`, or `Weaviate`. Instead, it stores embeddings in a regular database table (compatible with MySQL, PostgreSQL, etc.) and performs similarity comparisons in PHP.
+
+**This approach has pros and cons:**
+
+#### ✅ Benefits
+
+* No need to set up or maintain a specialized vector database.
+* Works out-of-the-box with your existing Laravel database setup.
+* Easier to install, debug, and understand for most Laravel developers.
+
+#### ⚠️ Considerations
+
+* Since similarity comparisons are done in memory, **the package loads all embeddings of the same model** to calculate similarity scores.
+* **This may cause performance issues** if your application contains a large number of embeddings for a given model.
+* Not recommended for large-scale applications where millions of records need to be compared regularly. In such cases, a dedicated vector store (e.g., pgvector, Qdrant, Pinecone) may be more suitable.
+
 
 ## Useful resources
 
