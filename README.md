@@ -123,8 +123,10 @@ class SimilarContentResult
 The package ships with a `HasSimilarContent` trait which you can use in your models. You can customize the default behavior by overriding the `getEmbeddingData()` method:
 
 ```php
+use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 use Timm49\SimilarContentLaravel\Traits\HasSimilarContent;
 
+#[HasEmbeddings]
 class Article extends Model
 {
     use HasSimilarContent;
