@@ -81,16 +81,15 @@ To generate embeddings for all records, use the --force flag:
 php artisan similar-content:generate-embeddings --force
 ```
 
-To generate and store embeddings for a record from your application code, use:
+To generate and store embeddings for a record from within your application code, use this command:
 ```php
 SimilarContent::for($article)->generateAndStoreEmbeddings();
 ```
 
-> This will most likely be in your Controllers whenever a record is created/updated.
-
 ## Retrieving similar content
 
 Retrieving similar items for a record is as simple as:
+
 ```php
 $results = SimilarContent::for($article)->getSimilarContent();
 
