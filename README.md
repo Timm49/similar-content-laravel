@@ -151,6 +151,16 @@ foreach ($results as $result) {
 }
 ```
 
+## How similarity is calculated
+
+This package uses cosine similarity to compare content embeddings. After generating an embedding (a high-dimensional vector) for each model, it calculates the similarity between two records by measuring the cosine of the angle between their vectors.
+
+- A cosine similarity of 1 means the embeddings are identical (perfect match)
+- A score of 0 means they are completely unrelated (orthogonal vectors)
+- The result is a value between 0 and 1, where higher values indicate stronger similarity
+
+All similarity comparisons are done in PHP by loading and comparing vectors in memory.
+
 ## ⚠️ Database & Performance Notes
 
 This package **does not require a vector database** such as `pgvector`, `Pinecone`, or `Weaviate`. Instead, it stores embeddings in a regular database table (compatible with MySQL, PostgreSQL, etc.) and performs similarity comparisons in PHP.
