@@ -26,10 +26,10 @@ Install via Composer:
 composer require timm49/similar-content
 ```
 
-Publish configuration and migrations:
+Run the installation command:
 
 ```bash
-php artisan vendor:publish --provider="Timm49\LaravelSimilarContent\Providers\SimilarContentProvider"
+php artisan similar-content:install
 ```
 
 Then run migrations:
