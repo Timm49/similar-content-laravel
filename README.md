@@ -11,9 +11,11 @@ Example News Feed Application using this package: [Timm49/example-app-similar-co
 Add the `#[HasEmbeddings]` attribute to any Eloquent model you want to use for content similarity. This tells the package to generate embeddings for that model using the OpenAI Embeddings API.
 
 **2. Generate and store embeddings**
+
 Use the built-in Artisan command to generate embeddings for all existing records, or call a method in your application code to handle it automatically when new records are created or updated. The embeddings are stored in your database.
 
 **3. Get similar content**
+
 Retrieve similar items for any model like this:
 
 ```php
