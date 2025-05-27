@@ -104,7 +104,7 @@ Generate embeddings for all models using the #[HasEmbeddings] attribute.
 php artisan similar-content:generate-embeddings
 ```
 
-> 📘 This will generate embeddings for ALL records of ALL models with the attribute. Depending on the amount of records in your database this can potentially be a long/expensive process since it will make a lot of API requests.
+> ⚠ This will generate embeddings for ALL records of ALL models with the attribute. Depending on the amount of records in your database this can potentially be a long/expensive process since it will make a lot of API requests.
 
 ### Manual Embedding Generation
 
