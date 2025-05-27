@@ -12,13 +12,13 @@ class InstallSimilarContentCommand extends Command
 
     public function handle(): int
     {
-        $this->info('🔧 Publishing config and migration files...');
+        $this->info('🔧 Publishing migration file...');
 
         $this->callSilent('vendor:publish', [
             '--provider' => "Timm49\\LaravelSimilarContent\\Providers\\SimilarContentProvider",
         ]);
 
-        $this->info('✅ Config and migration files published.');
+        $this->info('✅ Migration file published.');
 
         $this->warn('⚠️  Don\'t forget to:');
         $this->line('- Add your OpenAI API key to your `.env` file as `SIMILAR_CONTENT_OPENAI_API_KEY=your-key-here`');
