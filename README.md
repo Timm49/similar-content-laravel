@@ -53,7 +53,7 @@ SIMILAR_CONTENT_OPENAI_API_KEY=some-key
 
 ### Marking your models with embeddings
 
-Simply annotate your Eloquent model with the `#[HasEmbeddings]` attribute. This automatically generates embeddings using a default transformation (concatenation of all fillable attributes) when running the artisan command.
+Annotate the models you want to use with the `#[HasEmbeddings]` attribute.
 
 ```php
 use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
@@ -61,7 +61,60 @@ use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 #[HasEmbeddings]
 class Article extends Model
 {
-    protected $fillable = ['title', 'content'];
+ 
+}
+```
+
+This automatically generates embeddings using a default transformation when running the artisan command.
+The default transformation simply does: $model->toJson()
+
+### Generating embeddings
+
+#### Generate embeddings for existing records
+This command will generate and store embeddings for all annotated models which are already in your database, and don't have embeddings yet.
+```bash
+php artisan similar-content:generate-embeddings
+```
+
+To generate embeddings for all records, use the --force flag:
+```bash
+php artisan similar-content:generate-embeddings --force
+```
+
+To generate and store embeddings for a record from within your application code, use this command:
+```php
+SimilarContent::for($article)->generateAndStoreEmbeddings();
+```
+
+## Retrieving similar content
+
+Retrieving similar items for a record is as simple as:
+
+```php
+$results = SimilarContent::for($article)->getSimilarContent();
+
+foreach ($results as $result) {
+    echo "Found similar content (score: {$result->similarityScore}) with ID {$result->targetId}";
+}
+```
+
+This will return an **array of `SimilarContentResult` objects**, each representing a similar record and its similarity score.
+
+## Advanced usage
+
+### `SimilarContentResult` structure
+
+```php
+class SimilarContentResult
+{
+    public function __construct(
+        public readonly string $sourceType,      // Class name of the original model
+        public readonly string $sourceId,        // ID of the original model
+        public readonly string $targetType,      // Class name of the similar model
+        public readonly string $targetId,        // ID of the similar model
+        public readonly float $similarityScore,  // Value between 0 and 1 (1 = identical)
+    ) {
+    }
 }
 ```
 
@@ -70,8 +123,10 @@ class Article extends Model
 The package ships with a `HasSimilarContent` trait which you can use in your models. You can customize the default behavior by overriding the `getEmbeddingData()` method:
 
 ```php
+use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 use Timm49\SimilarContentLaravel\Traits\HasSimilarContent;
 
+#[HasEmbeddings]
 class Article extends Model
 {
     use HasSimilarContent;
@@ -90,67 +145,6 @@ This gives you full control over:
 - What text is used for similarity matching
 
 > 📘 It's very important to include the right data for the right embedding purposes. I've added some links at the bottom of this README which should be helpful to get familiar with vector databases, embedding, etc.
-
-## Generating embeddings
-
-Generate embeddings for all models using the #[HasEmbeddings] attribute.
-> This will only generate embeddings for records which don't have any embeddings.
-
-```bash
-php artisan similar-content:generate-embeddings
-```
-
-To re-generate existing embeddings, use the --force flag:
-
-```bash
-php artisan similar-content:generate-embeddings --force
-```
-
-> ⚠ This will generate embeddings for ALL records of ALL models with the attribute. Depending on the amount of records in your database this can potentially be a long/expensive process since it will make a lot of API requests.
-
-### Manual Embedding Generation
-
-While the package provides an artisan command to generate embeddings for all marked models, you can also generate embeddings manually for specific models using the fluent interface:
-
-```php
-SimilarContent::for($article)->generateAndStoreEmbeddings();
-```
-
-## Retrieving similar content
-
-Now you can retrieve similar content for a specific record like so:
-
-```php
-SimilarContent::for($article)->getSimilarContent();
-```
-
-This will return an **array of `SimilarContentResult` objects**, each representing a similar record and its similarity score.
-
-### `SimilarContentResult` structure
-
-```php
-class SimilarContentResult
-{
-    public function __construct(
-        public readonly string $sourceType,      // Class name of the original model
-        public readonly string $sourceId,        // ID of the original model
-        public readonly string $targetType,      // Class name of the similar model
-        public readonly string $targetId,        // ID of the similar model
-        public readonly float $similarityScore,  // Value between 0 and 1 (1 = identical)
-    ) {
-    }
-}
-```
-
-You can loop through the results like this:
-
-```php
-$results = SimilarContent::for($article)->getSimilarContent();
-
-foreach ($results as $result) {
-    echo "Found similar content (score: {$result->similarityScore}) with ID {$result->targetId}";
-}
-```
 
 ## How similarity is calculated
 
@@ -179,7 +173,6 @@ This package **does not require a vector database** such as `pgvector`, `Pinecon
 * Since similarity comparisons are done in memory, **the package loads all embeddings of the same model** to calculate similarity scores.
 * **This may cause performance issues** if your application contains a large number of embeddings for a given model.
 * Not recommended for large-scale applications where millions of records need to be compared regularly. In such cases, a dedicated vector store (e.g., pgvector, Qdrant, Pinecone) may be more suitable.
-
 
 ## Useful resources
 
