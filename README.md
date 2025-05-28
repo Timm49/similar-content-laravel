@@ -49,6 +49,14 @@ Add the SIMILAR_CONTENT_OPENAI_API_KEY to your .env file
 SIMILAR_CONTENT_OPENAI_API_KEY=some-key
 ```
 
+### Queue Connection
+
+To generate embeddings in the background when running the artisan command, add the following variable to your .env file:
+
+```env
+SIMILAR_CONTENT_QUEUE_CONNECTION=database
+```
+
 ## Usage
 
 ### Marking your models with embeddings

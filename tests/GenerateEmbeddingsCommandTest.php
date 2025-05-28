@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
 use Timm49\SimilarContentLaravel\Services\SimilarContentService;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
@@ -24,7 +25,7 @@ beforeEach(function () {
     Queue::fake();
 });
 
-it('it asks for a confirmation to generate embeddings for X amount of records', function () {
+it('asks for a confirmation to generate embeddings for X amount of records', function () {
 
     Comment::create(['content' => 'This is a test comment',]);
     Comment::create(['content' => 'This is also a test comment',]);
@@ -35,7 +36,7 @@ it('it asks for a confirmation to generate embeddings for X amount of records', 
         ->assertExitCode(0);
 });
 
-it('it skips records which already have embeddings', function () {
+it('skips records which already have embeddings', function () {
     $articleWithEmbeddings = Article::create([
         'title' => 'Test Article',
         'content' => 'This is a test article',
@@ -75,4 +76,17 @@ it('creates an embedding record for the article', function () {
 
     // Then
     $mock->shouldHaveReceived('generateAndStoreEmbeddings');
+});
+
+
+it('pushes jobs on the queue when queue is configured', function () {
+    config(['similar_content.queue_connection' => 'redis']);
+
+    Comment::create(['content' => 'This is a test comment',]);
+
+    $this->artisan('similar-content:generate-embeddings')
+        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment. Do you want to continue?', 'yes')
+        ->assertExitCode(0);
+
+    Queue::assertPushed(GenerateAndStoreEmbeddingsJob::class, fn (GenerateAndStoreEmbeddingsJob $job) => $job->connection === 'redis');
 });

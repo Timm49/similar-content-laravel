@@ -11,4 +11,5 @@ return [
     |
     */
     'openai_api_key' => env('SIMILAR_CONTENT_OPENAI_API_KEY'),
-]; 
+    'queue_connection' => env('SIMILAR_CONTENT_QUEUE_CONNECTION'),
+];

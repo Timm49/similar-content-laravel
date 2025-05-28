@@ -3,6 +3,7 @@
 namespace Timm49\SimilarContentLaravel\Console\Commands;
 
 use Illuminate\Console\Command;
+use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
 use Timm49\SimilarContentLaravel\Services\SimilarContentService;
 use Timm49\SimilarContentLaravel\SimilarContent;
 
@@ -27,6 +28,7 @@ class GenerateEmbeddingsCommand extends Command
             }
 
             $count = $records->count();
+
             if ($count === 0) {
                 $this->line("No records without embeddings found for model: {$model}");
                 continue;
@@ -35,8 +37,17 @@ class GenerateEmbeddingsCommand extends Command
                 $this->warn("Skipped model: {$model}");
                 continue;
             }
-            $records->each(fn ($record) => $embeddingService->generateAndStoreEmbeddings($record));
-            $this->info("Generated embeddings for model: " . $model);
+
+            $queueConnection = config('similar_content.queue_connection');
+
+            if ($queueConnection) {
+                $records->each(fn ($record) => GenerateAndStoreEmbeddingsJob::dispatch($record)
+                    ->onConnection($queueConnection));
+                $this->info("Embedding jobs for model " . $model . " have been pushed on {$queueConnection}");
+            } else {
+                $records->each(fn ($record) => $embeddingService->generateAndStoreEmbeddings($record));
+                $this->info("Generated embeddings for model: " . $model);
+            }
         }
 
         return Command::SUCCESS;
