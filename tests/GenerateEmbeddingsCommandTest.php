@@ -4,6 +4,7 @@ namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Timm49\SimilarContentLaravel\Services\SimilarContentService;
@@ -35,6 +36,20 @@ it('it asks for a confirmation to generate embeddings for X amount of records', 
 });
 
 it('it skips records which already have embeddings', function () {
+    $articleWithEmbeddings = Article::create([
+        'title' => 'Test Article',
+        'content' => 'This is a test article',
+    ]);
+
+    DB::table('embeddings')->insert([
+        [
+            'embeddable_type' => Article::class,
+            'embeddable_id' => (string)$articleWithEmbeddings->id,
+            'data' => json_encode([0.1, 0.2, 0.3]),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]
+    ]);
 
     $this->artisan('similar-content:generate-embeddings')
         ->expectsOutputToContain('No records without embeddings found for model: Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment')
