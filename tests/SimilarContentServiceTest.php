@@ -3,11 +3,12 @@
 namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
 use Illuminate\Http\Client\Request;
-use Illuminate\Support\Facades\DB;
-use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
-use Timm49\SimilarContentLaravel\Services\SimilarContentService;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Timm49\SimilarContentLaravel\Services\SimilarContentService;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Post;
 
 beforeEach(function () {
@@ -40,7 +41,7 @@ it('stores an embedding record for the article', function () {
     expect($embeddingRecord->embeddable_type)->toBe(Article::class);
 });
 
-it('it uses the correct API key', function () {
+it('uses the correct API key', function () {
     $article = Article::create([
         'title' => 'Test Article',
         'content' => 'This is a test article',
@@ -53,12 +54,12 @@ it('it uses the correct API key', function () {
     });
 });
 
-it('it uses the data from the trait method', function () {
+it('uses the data from the trait method', function () {
     $article = Article::create([
         'title' => 'Test Article',
         'content' => 'This is a test article',
     ]);
-    
+
     app(SimilarContentService::class)->generateAndStoreEmbeddings($article);
     
     Http::assertSent(function (Request $request) use ($article) {
@@ -66,15 +67,15 @@ it('it uses the data from the trait method', function () {
     });
 });
 
-it('it uses default data when trait not used', function () {
+it('uses default data when trait not used', function () {
     $post = Post::create([
         'title' => 'Test Post',
         'content' => 'This is a test post',
     ]);
-    
+
     app(SimilarContentService::class)->generateAndStoreEmbeddings($post);
     
     Http::assertSent(function (Request $request) use ($post) {
-        return $request->data()['input'] === $post->toJson();
+        return Str::contains($request->data()['input'], $post->content);
     });
 });

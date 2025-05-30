@@ -2,14 +2,14 @@
 
 namespace Timm49\SimilarContentLaravel\Services;
 
-use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
 
 class SimilarContentService
 {
-    private function generateEmbeddings(Model $model): array
+    public function generateEmbeddings(Model $model): array
     {
         $input = method_exists($model, 'getEmbeddingData')
             ? $model->getEmbeddingData()
@@ -29,15 +29,13 @@ class SimilarContentService
 
     public function generateAndStoreEmbeddings(Model $model)
     {
-        DB::table('embeddings')->updateOrInsert(
-            [
-                'embeddable_type' => get_class($model),
-                'embeddable_id' => $model->id,
-            ],
-            [
-                'data' => json_encode($this->generateEmbeddings($model)),
-                'updated_at' => now(),
-            ]
-        );
+        $queueConnection = config('similar_content.queue_connection');
+
+        if ($queueConnection) {
+            GenerateAndStoreEmbeddingsJob::dispatch($model)->onConnection($queueConnection);
+        } else {
+            GenerateAndStoreEmbeddingsJob::dispatchSync($model);
+        }
+
     }
 }

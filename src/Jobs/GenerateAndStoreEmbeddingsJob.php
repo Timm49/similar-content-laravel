@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Timm49\SimilarContentLaravel\Services\SimilarContentService;
 
 class GenerateAndStoreEmbeddingsJob implements ShouldQueue
@@ -21,6 +22,15 @@ class GenerateAndStoreEmbeddingsJob implements ShouldQueue
 
     public function handle(SimilarContentService $embeddingService)
     {
-        $embeddingService->generateAndStoreEmbeddings($this->record);
+        DB::table('embeddings')->updateOrInsert(
+            [
+                'embeddable_type' => get_class($this->record),
+                'embeddable_id' => $this->record->id,
+            ],
+            [
+                'data' => json_encode($embeddingService->generateEmbeddings($this->record)),
+                'updated_at' => now(),
+            ]
+        );
     }
 }
