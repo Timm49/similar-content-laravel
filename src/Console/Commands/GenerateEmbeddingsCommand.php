@@ -4,7 +4,6 @@ namespace Timm49\SimilarContentLaravel\Console\Commands;
 
 use Illuminate\Console\Command;
 use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
-use Timm49\SimilarContentLaravel\Services\SimilarContentService;
 use Timm49\SimilarContentLaravel\SimilarContent;
 
 class GenerateEmbeddingsCommand extends Command
@@ -12,7 +11,7 @@ class GenerateEmbeddingsCommand extends Command
     protected $signature = 'similar-content:generate-embeddings {--force : Skip confirmation prompts}';
     protected $description = 'Generate embeddings for models with the HasEmbeddings attribute';
 
-    public function handle(SimilarContentService $embeddingService)
+    public function handle()
     {
         foreach (SimilarContent::getRegisteredModels() as $model) {
             if ($this->option('force')) {
@@ -45,7 +44,7 @@ class GenerateEmbeddingsCommand extends Command
                     ->onConnection($queueConnection));
                 $this->info("Embedding jobs for model " . $model . " have been pushed on {$queueConnection}");
             } else {
-                $records->each(fn ($record) => $embeddingService->generateAndStoreEmbeddings($record));
+                $records->each(fn ($record) => \Timm49\SimilarContentLaravel\Facades\SimilarContent::generateAndStoreEmbeddings($record));
                 $this->info("Generated embeddings for model: " . $model);
             }
         }

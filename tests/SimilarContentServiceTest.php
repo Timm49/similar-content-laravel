@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Timm49\SimilarContentLaravel\Services\SimilarContentService;
+use Timm49\SimilarContentLaravel\Facades\SimilarContent;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Post;
 
@@ -29,9 +29,9 @@ it('stores an embedding record for the article', function () {
          'title' => 'Test Article',
          'content' => 'This is a test article',
      ]);
-     
-    app(SimilarContentService::class)->generateAndStoreEmbeddings($article);
-    
+
+    SimilarContent::generateAndStoreEmbeddings($article);
+
     $embeddingRecord = DB::table('embeddings')->where('embeddable_id', $article->id)->first();
 
     expect($embeddingRecord)->not->toBeNull();
@@ -46,8 +46,8 @@ it('uses the correct API key', function () {
         'title' => 'Test Article',
         'content' => 'This is a test article',
     ]);
-    
-    app(SimilarContentService::class)->generateAndStoreEmbeddings($article);
+
+    SimilarContent::generateAndStoreEmbeddings($article);
 
     Http::assertSent(function (Request $request) {
         return $request->hasHeader('Authorization', 'Bearer my-api-key');
@@ -60,7 +60,7 @@ it('uses the data from the trait method', function () {
         'content' => 'This is a test article',
     ]);
 
-    app(SimilarContentService::class)->generateAndStoreEmbeddings($article);
+    SimilarContent::generateAndStoreEmbeddings($article);
     
     Http::assertSent(function (Request $request) use ($article) {
         return $request->data()['input'] === $article->getEmbeddingData();
@@ -73,7 +73,7 @@ it('uses default data when trait not used', function () {
         'content' => 'This is a test post',
     ]);
 
-    app(SimilarContentService::class)->generateAndStoreEmbeddings($post);
+    SimilarContent::generateAndStoreEmbeddings($post);
     
     Http::assertSent(function (Request $request) use ($post) {
         return Str::contains($request->data()['input'], $post->content);
