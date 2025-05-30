@@ -4,72 +4,31 @@ namespace Timm49\SimilarContentLaravel\Services;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentManagerContract;
-use Timm49\SimilarContentLaravel\SimilarContentContext;
 use Timm49\SimilarContentLaravel\SimilarContentResult;
 
 class SimilarContentManager implements SimilarContentManagerContract
 {
-    private static array $registeredModels = [];
-
     public function __construct(
-        private EmbeddingApi $embeddingApi
+        private EmbeddingApi $embeddingApi,
     ) {
     }
 
     public function createEmbedding(Model $model): void
     {
+        $embedding = json_encode($this->embeddingApi->generateEmbeddings($model));
+        
         DB::table('embeddings')->updateOrInsert(
             [
                 'embeddable_type' => get_class($model),
                 'embeddable_id' => $model->id,
             ],
             [
-                'data' => json_encode($this->embeddingApi->generateEmbeddings($model)),
+                'data' => $embedding,
                 'updated_at' => now(),
             ]
         );
-    }
-
-
-    public static function getRegisteredModels(?string $path = null): array
-    {
-        self::$registeredModels = [];
-        $path ??= config('similar_content.models_path', app_path('Models'));
-
-        foreach (glob($path . '/*.php') as $file) {
-            $className = self::extractNamespaceFromFile($file) . '\\' . basename($file, '.php');
-
-            if (! class_exists($className)) {
-                continue;
-            }
-
-            if (! is_subclass_of($className, Model::class)) {
-                continue;
-            }
-
-            $reflection = new \ReflectionClass($className);
-            $attributes = $reflection->getAttributes(HasEmbeddings::class);
-
-            if (! empty($attributes)) {
-                self::$registeredModels[] = $className;
-            }
-        }
-
-        return self::$registeredModels;
-    }
-
-    static function extractNamespaceFromFile($filePath): ?string {
-        $fileContents = file_get_contents($filePath);
-        $namespacePattern = '/namespace\s+([^;]+);/';
-
-        if (preg_match($namespacePattern, $fileContents, $matches)) {
-            return $matches[1];
-        }
-
-        return null;
     }
 
     public function getSimilarContent(Model $model): array

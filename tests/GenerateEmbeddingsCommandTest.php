@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use Timm49\SimilarContentLaravel\Console\Commands\GenerateEmbeddingsCommand;
 use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
@@ -22,6 +23,15 @@ beforeEach(function () {
         ]),
     ]);
     Queue::fake();
+});
+
+it('discovers models with HasEmbeddings attribute', function () {
+    $modelsPath = __DIR__ . '/Fixtures/Models';
+    $models = GenerateEmbeddingsCommand::getRegisteredModels($modelsPath);
+
+    expect($models)->toHaveCount(2);
+    expect($models[0])->toBe(Article::class);
+    expect($models[1])->toBe(Comment::class);
 });
 
 it('asks for a confirmation to generate embeddings for X amount of records', function () {

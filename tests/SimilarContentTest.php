@@ -25,7 +25,6 @@ beforeEach(function () {
     ]);
 });
 
-
 it('returns empty array when getting similar content', function () {
     $article = new Article();
     
@@ -33,7 +32,6 @@ it('returns empty array when getting similar content', function () {
     
     expect($result)->toBeArray()->toBeEmpty();
 });
-
 
 it('generates and stores an embedding for a model', function () {
     Http::fake([
@@ -58,7 +56,6 @@ it('generates and stores an embedding for a model', function () {
 
     expect(json_decode($embedding->data))->toEqual([0.5, 0.6, 0.7]);
 });
-
 
 it('stores an embedding record for the article', function () {
     $article = Article::create([
@@ -115,6 +112,7 @@ it('uses default data when trait not used', function () {
         return Str::contains($request->data()['input'], $post->content);
     });
 });
+
 it('returns similar content results', function () {
 
     $article1 = Article::create(['title' => 'Test Article 1', 'content' => 'Content 1']);
