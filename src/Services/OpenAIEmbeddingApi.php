@@ -5,9 +5,9 @@ namespace Timm49\SimilarContentLaravel\Services;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
+use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
 
-class SimilarContentService
+class OpenAIEmbeddingApi implements EmbeddingApi
 {
     public function generateEmbeddings(Model $model): array
     {
@@ -25,17 +25,5 @@ class SimilarContentService
             ->json();
 
         return $response['data'][0]['embedding'];
-    }
-
-    public function generateAndStoreEmbeddings(Model $model)
-    {
-        $queueConnection = config('similar_content.queue_connection');
-
-        if ($queueConnection) {
-            GenerateAndStoreEmbeddingsJob::dispatch($model)->onConnection($queueConnection);
-        } else {
-            GenerateAndStoreEmbeddingsJob::dispatchSync($model);
-        }
-
     }
 }

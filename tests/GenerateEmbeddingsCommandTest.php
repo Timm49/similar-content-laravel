@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
-use Timm49\SimilarContentLaravel\Services\SimilarContentService;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
 
@@ -57,27 +56,17 @@ it('skips records which already have embeddings', function () {
         ->assertExitCode(0);
 });
 
-
-it('creates an embedding record for the article', function () {
-    // Given
+it('dispatches sync when no queue connection is configured', function () {
     Article::create([
         'title' => 'Test Article',
         'content' => 'This is a test article',
     ]);
 
-    $mock = \Mockery::mock(SimilarContentService::class);
-    $mock->shouldReceive('generateAndStoreEmbeddings');
-
-    $this->app->instance(SimilarContentService::class, $mock);
-
-    // When
     $this->artisan('similar-content:generate-embeddings --force')
         ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
 
-    // Then
-    $mock->shouldHaveReceived('generateAndStoreEmbeddings');
+    Queue::assertPushed(GenerateAndStoreEmbeddingsJob::class, fn (GenerateAndStoreEmbeddingsJob $job) => $job->connection === 'sync');
 });
-
 
 it('pushes jobs on the queue when queue is configured', function () {
     config(['similar_content.queue_connection' => 'redis']);

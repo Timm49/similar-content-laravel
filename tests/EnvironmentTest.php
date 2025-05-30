@@ -2,7 +2,7 @@
 
 namespace Timm49\SimilarContentLaravel\Tests;
 
-use Timm49\SimilarContentLaravel\SimilarContent;
+use Timm49\SimilarContentLaravel\Facades\SimilarContent;
 
 test('environment is working', function () {
     $service = app()->make(SimilarContent::class);

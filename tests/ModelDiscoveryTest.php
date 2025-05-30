@@ -2,7 +2,7 @@
 
 namespace Timm49\SimilarContentLaravel\Tests;
 
-use Timm49\SimilarContentLaravel\SimilarContent;
+use Timm49\SimilarContentLaravel\Facades\SimilarContent;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
 

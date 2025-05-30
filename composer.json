@@ -34,7 +34,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Timm49\\SimilarContentLaravel\\Providers\\SimilarContentProvider"
+                "Timm49\\SimilarContentLaravel\\SimilarContentProvider"
             ]
         }
     },
