@@ -3,7 +3,6 @@
 namespace Timm49\SimilarContentLaravel\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Timm49\SimilarContentLaravel\Casts\EmbeddingVectorCast;
 
 class Embedding extends Model
 {
@@ -12,8 +11,8 @@ class Embedding extends Model
         'embeddable_type',
         'data',
     ];
-    
+
     protected $casts = [
-        'data' => EmbeddingVectorCast::class,
+        'data' => 'array',
     ];
 }

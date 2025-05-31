@@ -5,7 +5,7 @@ namespace Timm49\SimilarContentLaravel\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
-use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
+use Timm49\SimilarContentLaravel\Facades\SimilarContent;
 
 class GenerateEmbeddingsCommand extends Command
 {
@@ -40,13 +40,9 @@ class GenerateEmbeddingsCommand extends Command
                 continue;
             }
 
-            $queueConnection = config('similar_content.queue_connection');
-            $records->each(fn ($record) => $queueConnection
-                ? GenerateAndStoreEmbeddingsJob::dispatch($record)->onConnection($queueConnection)
-                : GenerateAndStoreEmbeddingsJob::dispatchSync($record)
-            );
-
             $this->info("Generating embeddings for model: " . $model);
+
+            $records->each(fn ($record) => SimilarContent::createEmbedding($record));
         }
 
         return Command::SUCCESS;

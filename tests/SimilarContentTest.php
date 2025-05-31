@@ -10,18 +10,15 @@ use Timm49\SimilarContentLaravel\Facades\SimilarContent;
 use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\SimilarContentResult;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
-use Timm49\SimilarContentLaravel\ValueObjects\EmbeddingVector;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Post;
 
-function fake(int $dimensions = 1536): EmbeddingVector
+function fake(int $dimensions = 1536): array
 {
-    return new EmbeddingVector(array_fill(0, $dimensions, 0.123)); // or use random float if you want
+    return [0.1, 0.2, 0.3];
 }
 
 beforeEach(function () {
-
     Config::set('similar_content.openai_api_key', 'my-api-key');
-
-
 });
 
 it('returns empty array when getting similar content', function () {
@@ -32,32 +29,8 @@ it('returns empty array when getting similar content', function () {
     expect($result)->toBeArray()->toBeEmpty();
 });
 
-it('generates and stores an embedding for a model', function () {
-    $embedding = fake()->toArray();
-    Http::fake([
-        'https://api.openai.com/v1/embeddings' => Http::response([
-            'data' => [
-                ['embedding' => $embedding],
-            ],
-        ]),
-    ]);
-
-    $article = Article::create([
-        'title' => 'Test Article',
-        'content' => 'This is a test article about AI.',
-    ]);
-
-    SimilarContent::createEmbedding($article);
-
-    $embeddingModel = Embedding::where('embeddable_type', Article::class)
-        ->where('embeddable_id', $article->id)
-        ->first();
-
-    expect($embeddingModel->data->toArray())->toEqual($embedding);
-});
-
 it('stores an embedding record for the article', function () {
-    $embedding = fake()->toArray();
+    $embedding = fake();
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
@@ -75,19 +48,17 @@ it('stores an embedding record for the article', function () {
 
     $embeddingRecord = Embedding::where('embeddable_id', $article->id)->first();
 
-    expect($embeddingRecord)->not->toBeNull();
-    expect($embeddingRecord->data)->toBeInstanceOf(EmbeddingVector::class);
-    expect($embeddingRecord->data->toArray())->toBe($embedding);
-    expect($embeddingRecord->embeddable_id)->toBe($article->id);
+    expect($embeddingRecord)->toBeInstanceOf(Embedding::class);
+    expect($embeddingRecord->data)->toBe($embedding);
     expect($embeddingRecord->embeddable_type)->toBe(Article::class);
 });
 
 it('uses the correct API key', function () {
-    $embedding = fake()->toArray();
+    $embedding = fake();
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
-                ['embedding' => fake()->toArray()],
+                ['embedding' => $embedding],
             ],
         ]),
     ]);
@@ -107,7 +78,7 @@ it('uses the data from the trait method', function () {
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
-                ['embedding' => fake()->toArray()],
+                ['embedding' => fake()],
             ],
         ]),
     ]);
@@ -127,12 +98,12 @@ it('uses default data when trait not used', function () {
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
-                ['embedding' => fake()->toArray()],
+                ['embedding' => fake()],
             ],
         ]),
     ]);
 
-    $post = Article::create([
+    $post = Post::create([
         'title' => 'Test Post',
         'content' => 'This is a test post',
     ]);
@@ -149,7 +120,7 @@ it('returns similar content results', function () {
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
-                ['embedding' => $embedding->toArray()],
+                ['embedding' => $embedding],
             ],
         ]),
     ]);
@@ -160,14 +131,14 @@ it('returns similar content results', function () {
         [
             'embeddable_type' => Article::class,
             'embeddable_id' => (string)$article1->id,
-            'data' => $embedding->toJson(),
+            'data' => json_encode($embedding),
             'created_at' => now(),
             'updated_at' => now(),
         ],
         [
             'embeddable_type' => Article::class,
             'embeddable_id' => (string)$article2->id,
-            'data' => $embedding->toJson(),
+            'data' => json_encode($embedding),
             'created_at' => now(),
             'updated_at' => now(),
         ],

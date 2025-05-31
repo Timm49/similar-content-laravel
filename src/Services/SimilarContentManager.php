@@ -7,7 +7,6 @@ use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentManagerContract;
 use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\SimilarContentResult;
-use Timm49\SimilarContentLaravel\ValueObjects\EmbeddingVector;
 
 class SimilarContentManager implements SimilarContentManagerContract
 {
@@ -23,7 +22,7 @@ class SimilarContentManager implements SimilarContentManagerContract
             'embeddable_id' => $model->id,
         ]);
 
-        $embedding->data = new EmbeddingVector($this->embeddingApi->generateEmbeddings($model));
+        $embedding->data = $this->embeddingApi->generateEmbedding($model);
         $embedding->updated_at = now();
         $embedding->save();
     }
@@ -38,7 +37,7 @@ class SimilarContentManager implements SimilarContentManagerContract
             return [];
         }
 
-        $sourceVector = $sourceEmbedding->data->toArray();
+        $sourceVector = $sourceEmbedding->data;
         $results = [];
 
         $targetEmbeddings = Embedding::where('embeddable_type', get_class($model))
@@ -46,7 +45,7 @@ class SimilarContentManager implements SimilarContentManagerContract
             ->get();
 
         foreach ($targetEmbeddings as $targetEmbedding) {
-            $targetVector = $targetEmbedding->data->toArray();
+            $targetVector = $targetEmbedding->data;
             $similarityScore = $this->calculateCosineSimilarity($sourceVector, $targetVector);
 
             $results[] = new SimilarContentResult(
