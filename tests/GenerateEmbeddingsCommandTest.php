@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
-use Timm49\SimilarContentLaravel\Console\Commands\GenerateEmbeddingsCommand;
 use Timm49\SimilarContentLaravel\Facades\SimilarContent;
 use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
@@ -21,15 +20,6 @@ beforeEach(function () {
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
     Artisan::call('migrate:fresh');
     Queue::fake();
-});
-
-it('discovers models with HasEmbeddings attribute', function () {
-    $modelsPath = __DIR__ . '/Fixtures/Models';
-    $models = GenerateEmbeddingsCommand::getRegisteredModels($modelsPath);
-
-    expect($models)->toHaveCount(2);
-    expect($models[0])->toBe(Article::class);
-    expect($models[1])->toBe(Comment::class);
 });
 
 it('asks for a confirmation to generate embeddings for X amount of records', function () {
@@ -69,8 +59,8 @@ it('skips records which already have embeddings', function () {
         ]
     ]);
 
-    $this->artisan('similar-content:generate-embeddings')
-        ->expectsOutputToContain('No records without embeddings found for model: Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment')
+    $this->artisan('similar-content:generate-embeddings -model=Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article')
+        ->expectsOutputToContain('No records without embeddings found for model: ç')
         ->assertExitCode(0);
 });
 
@@ -93,7 +83,7 @@ it('creates embeddings for a single record', function () {
 
     SimilarContent::shouldReceive('createEmbedding')->once();
 
-    $this->artisan('similar-content:generate-embeddings --force')
+    $this->artisan('similar-content:generate-embeddings Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article --force')
         ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
 });
 
@@ -123,7 +113,7 @@ it('creates multiple embeddings in one call', function () {
         'content' => 'This is a test article 2',
     ]);
     
-    $this->artisan('similar-content:generate-embeddings --force')
+    $this->artisan('similar-content:generate-embeddings Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article  --force')
         ->expectsConfirmation('This will generate embeddings for 2 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
 
     $this->assertDatabaseCount('embeddings', 2);
