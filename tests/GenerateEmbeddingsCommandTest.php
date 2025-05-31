@@ -30,6 +30,14 @@ it('asks for a confirmation to generate embeddings for X amount of records', fun
                     'index' => 0,
                     'embedding' => fake()
                 ],
+                [
+                    'index' => 1,
+                    'embedding' => fake()
+                ],
+                [
+                    'index' => 2,
+                    'embedding' => fake()
+                ],
             ],
         ]),
     ]);
@@ -38,7 +46,7 @@ it('asks for a confirmation to generate embeddings for X amount of records', fun
     Comment::create(['content' => 'This is also a test comment',]);
     Comment::create(['content' => 'This is another test comment',]);
 
-    $this->artisan('similar-content:generate-embeddings')
+    $this->artisan('similar-content:generate-embeddings ')
         ->expectsConfirmation('This will generate embeddings for 3 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment. Do you want to continue?', 'yes')
         ->assertExitCode(0);
 });
@@ -59,7 +67,7 @@ it('skips records which already have embeddings', function () {
         ]
     ]);
 
-    $this->artisan('similar-content:generate-embeddings -model=Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article')
+    $this->artisan('similar-content:generate-embeddings Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article')
         ->expectsOutputToContain('No records without embeddings found for model: ç')
         ->assertExitCode(0);
 });
@@ -113,7 +121,7 @@ it('creates multiple embeddings in one call', function () {
         'content' => 'This is a test article 2',
     ]);
     
-    $this->artisan('similar-content:generate-embeddings Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article  --force')
+    $this->artisan('similar-content:generate-embeddings \\Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article --force')
         ->expectsConfirmation('This will generate embeddings for 2 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
 
     $this->assertDatabaseCount('embeddings', 2);

@@ -8,7 +8,7 @@ use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
 
 class GenerateEmbeddingsCommand extends Command
 {
-    protected $signature = 'similar-content:generate-embeddings {model} {--force : Skip confirmation prompts}';
+    protected $signature = 'similar-content:generate-embeddings {model : The model you want to generate embeddings for} {--force : Skip confirmation prompts}';
 
     protected $description = 'Generate embeddings for a specified model';
 
@@ -28,9 +28,9 @@ class GenerateEmbeddingsCommand extends Command
             return 1;
         }
 
-        GenerateAndStoreEmbeddingsJob::dispatch($modelInstance);
-
         $this->info("Embeddings generation job dispatched for $modelClass.");
+
+        GenerateAndStoreEmbeddingsJob::dispatch($modelInstance);
         return 0;
     }
 } 
