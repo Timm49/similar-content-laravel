@@ -4,13 +4,19 @@ namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use Timm49\SimilarContentLaravel\Console\Commands\GenerateEmbeddingsCommand;
 use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
+use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
+use Timm49\SimilarContentLaravel\ValueObjects\EmbeddingVector;
+
+function fake(int $dimensions = 1536): EmbeddingVector
+{
+    return new EmbeddingVector(array_fill(0, $dimensions, 0.123)); // or use random float if you want
+}
 
 beforeEach(function () {
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
@@ -18,7 +24,7 @@ beforeEach(function () {
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
-                ['embedding' => [0.5, 0.6, 0.7]],
+                ['embedding' => fake()->toArray()],
             ],
         ]),
     ]);
@@ -51,7 +57,7 @@ it('skips records which already have embeddings', function () {
         'content' => 'This is a test article',
     ]);
 
-    DB::table('embeddings')->insert([
+    Embedding::insert([
         [
             'embeddable_type' => Article::class,
             'embeddable_id' => (string)$articleWithEmbeddings->id,

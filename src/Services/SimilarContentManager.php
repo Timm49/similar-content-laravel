@@ -3,10 +3,11 @@
 namespace Timm49\SimilarContentLaravel\Services;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentManagerContract;
+use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\SimilarContentResult;
+use Timm49\SimilarContentLaravel\ValueObjects\EmbeddingVector;
 
 class SimilarContentManager implements SimilarContentManagerContract
 {
@@ -17,24 +18,19 @@ class SimilarContentManager implements SimilarContentManagerContract
 
     public function createEmbedding(Model $model): void
     {
-        $embedding = json_encode($this->embeddingApi->generateEmbeddings($model));
-        
-        DB::table('embeddings')->updateOrInsert(
-            [
-                'embeddable_type' => get_class($model),
-                'embeddable_id' => $model->id,
-            ],
-            [
-                'data' => $embedding,
-                'updated_at' => now(),
-            ]
-        );
+        $embedding = Embedding::firstOrNew([
+            'embeddable_type' => get_class($model),
+            'embeddable_id' => $model->id,
+        ]);
+
+        $embedding->data = new EmbeddingVector($this->embeddingApi->generateEmbeddings($model));
+        $embedding->updated_at = now();
+        $embedding->save();
     }
 
     public function getSimilarContent(Model $model): array
     {
-        $sourceEmbedding = DB::table('embeddings')
-            ->where('embeddable_type', get_class($model))
+        $sourceEmbedding = Embedding::where('embeddable_type', get_class($model))
             ->where('embeddable_id', $model->id)
             ->first();
 
@@ -42,16 +38,15 @@ class SimilarContentManager implements SimilarContentManagerContract
             return [];
         }
 
-        $sourceVector = json_decode($sourceEmbedding->data, true);
+        $sourceVector = $sourceEmbedding->data->toArray();
         $results = [];
 
-        $targetEmbeddings = DB::table('embeddings')
-            ->where('embeddable_type', get_class($model))
+        $targetEmbeddings = Embedding::where('embeddable_type', get_class($model))
             ->where('embeddable_id', '!=', $model->id)
             ->get();
 
         foreach ($targetEmbeddings as $targetEmbedding) {
-            $targetVector = json_decode($targetEmbedding->data, true);
+            $targetVector = $targetEmbedding->data->toArray();
             $similarityScore = $this->calculateCosineSimilarity($sourceVector, $targetVector);
 
             $results[] = new SimilarContentResult(
