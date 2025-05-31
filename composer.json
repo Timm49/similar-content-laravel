@@ -1,6 +1,18 @@
 {
     "name": "timm49/similar-content-laravel",
-    "description": "A Laravel package for finding similar content",
+    "description": "A Laravel package for generating and comparing content embeddings to find similar models using AI",
+    "keywords": [
+        "laravel",
+        "ai",
+        "openai",
+        "similar content",
+        "content similarity",
+        "embeddings",
+        "vector search",
+        "recommendation",
+        "semantic search",
+        "php"
+    ],
     "type": "library",
     "license": "MIT",
     "autoload": {
