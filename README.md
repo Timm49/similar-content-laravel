@@ -8,7 +8,7 @@ Example News Feed Application using this package: [Timm49/example-app-similar-co
 
 **1. Mark your models**
 
-Add the `#[HasEmbeddings]` attribute to any Eloquent model you want to use for content similarity. This tells the package to generate embeddings for that model using the OpenAI Embeddings API.
+[//]: # (Add the `#[HasEmbeddings]` attribute to any Eloquent model you want to use for content similarity. This tells the package to generate embeddings for that model using the OpenAI Embeddings API.)
 
 **2. Generate and store embeddings**
 
@@ -57,22 +57,6 @@ To generate embeddings in the background when running the artisan command, add t
 SIMILAR_CONTENT_QUEUE_CONNECTION=database
 ```
 
-## Usage
-
-### Marking your models with embeddings
-
-Annotate the models you want to use with the `#[HasEmbeddings]` attribute.
-
-```php
-use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
-
-#[HasEmbeddings]
-class Article extends Model
-{
- 
-}
-```
-
 This automatically generates embeddings using a default transformation when running the artisan command.
 The default transformation simply does: $model->toJson()
 
@@ -91,16 +75,14 @@ php artisan similar-content:generate-embeddings --force
 
 To generate and store embeddings for a record from within your application code, use this command:
 ```php
-SimilarContent::for($article)->generateAndStoreEmbeddings();
+SimilarContent::createEmbedding($article);
+
 ```
 
 ## Retrieving similar content
-
 Retrieving similar items for a record is as simple as:
-
 ```php
-$results = SimilarContent::for($article)->getSimilarContent();
-
+$results = SimilarContent::getSimilarContent($article);
 foreach ($results as $result) {
     echo "Found similar content (score: {$result->similarityScore}) with ID {$result->targetId}";
 }
@@ -131,10 +113,8 @@ class SimilarContentResult
 The package ships with a `HasSimilarContent` trait which you can use in your models. You can customize the default behavior by overriding the `getEmbeddingData()` method:
 
 ```php
-use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 use Timm49\SimilarContentLaravel\Traits\HasSimilarContent;
 
-#[HasEmbeddings]
 class Article extends Model
 {
     use HasSimilarContent;

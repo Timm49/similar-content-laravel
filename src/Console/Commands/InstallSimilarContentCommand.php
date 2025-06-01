@@ -15,7 +15,7 @@ class InstallSimilarContentCommand extends Command
         $this->info('🔧 Publishing migration file...');
 
         $this->callSilent('vendor:publish', [
-            '--provider' => "Timm49\\SimilarContentLaravel\\Providers\\SimilarContentProvider",
+            '--provider' => "Timm49\\SimilarContentLaravel\\SimilarContentProvider",
         ]);
 
         $this->info('✅ Migration file published.');

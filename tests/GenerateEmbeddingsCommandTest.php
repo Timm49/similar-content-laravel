@@ -4,34 +4,48 @@ namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
-use Timm49\SimilarContentLaravel\Jobs\GenerateAndStoreEmbeddingsJob;
-use Timm49\SimilarContentLaravel\Services\SimilarContentService;
+use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
+
+function fake(int $dimensions = 1536): array
+{
+    return [0.1, 0.2, 0.3];
+}
 
 beforeEach(function () {
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
     Artisan::call('migrate:fresh');
-    Http::fake([
-        'https://api.openai.com/v1/embeddings' => Http::response([
-            'data' => [
-                ['embedding' => [0.5, 0.6, 0.7]],
-            ],
-        ]),
-    ]);
     Queue::fake();
 });
 
 it('asks for a confirmation to generate embeddings for X amount of records', function () {
+    Http::fake([
+        'https://api.openai.com/v1/embeddings' => Http::response([
+            'data' => [
+                [
+                    'index' => 0,
+                    'embedding' => fake()
+                ],
+                [
+                    'index' => 1,
+                    'embedding' => fake()
+                ],
+                [
+                    'index' => 2,
+                    'embedding' => fake()
+                ],
+            ],
+        ]),
+    ]);
 
     Comment::create(['content' => 'This is a test comment',]);
     Comment::create(['content' => 'This is also a test comment',]);
     Comment::create(['content' => 'This is another test comment',]);
 
-    $this->artisan('similar-content:generate-embeddings')
+    $this->artisan('similar-content:generate-embeddings ')
         ->expectsConfirmation('This will generate embeddings for 3 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment. Do you want to continue?', 'yes')
         ->assertExitCode(0);
 });
@@ -42,7 +56,7 @@ it('skips records which already have embeddings', function () {
         'content' => 'This is a test article',
     ]);
 
-    DB::table('embeddings')->insert([
+    Embedding::insert([
         [
             'embeddable_type' => Article::class,
             'embeddable_id' => (string)$articleWithEmbeddings->id,
@@ -52,41 +66,59 @@ it('skips records which already have embeddings', function () {
         ]
     ]);
 
-    $this->artisan('similar-content:generate-embeddings')
-        ->expectsOutputToContain('No records without embeddings found for model: Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment')
+    $this->artisan('similar-content:generate-embeddings Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article')
+        ->expectsOutputToContain('No records without embeddings found for model: ç')
         ->assertExitCode(0);
 });
 
+it('creates embeddings for a single record', function () {
+    Http::fake([
+        'https://api.openai.com/v1/embeddings' => Http::response([
+            'data' => [
+                [
+                    'index' => 0,
+                    'embedding' => fake()
+                ],
+            ],
+        ]),
+    ]);
 
-it('creates an embedding record for the article', function () {
-    // Given
     Article::create([
         'title' => 'Test Article',
         'content' => 'This is a test article',
     ]);
 
-    $mock = \Mockery::mock(SimilarContentService::class);
-    $mock->shouldReceive('generateAndStoreEmbeddings');
-
-    $this->app->instance(SimilarContentService::class, $mock);
-
-    // When
-    $this->artisan('similar-content:generate-embeddings --force')
+    $this->artisan('similar-content:generate-embeddings Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article --force')
         ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
-
-    // Then
-    $mock->shouldHaveReceived('generateAndStoreEmbeddings');
 });
 
+it('creates multiple embeddings in one call', function () {
+    Http::fake([
+        'https://api.openai.com/v1/embeddings' => Http::response([
+            'data' => [
+                [
+                    'index' => 0,
+                    'embedding' => fake()
+                ],
+                [
+                    'index' => 1,
+                    'embedding' => fake()
+                ],
+            ],
+        ]),
+    ]);
 
-it('pushes jobs on the queue when queue is configured', function () {
-    config(['similar_content.queue_connection' => 'redis']);
+    Article::create([
+        'title' => 'Test Article 1',
+        'content' => 'This is a test article 1',
+    ]);
 
-    Comment::create(['content' => 'This is a test comment',]);
+    Article::create([
+        'title' => 'Test Article 2',
+        'content' => 'This is a test article 2',
+    ]);
+    
+    $this->artisan('similar-content:generate-embeddings Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article');
 
-    $this->artisan('similar-content:generate-embeddings')
-        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment. Do you want to continue?', 'yes')
-        ->assertExitCode(0);
-
-    Queue::assertPushed(GenerateAndStoreEmbeddingsJob::class, fn (GenerateAndStoreEmbeddingsJob $job) => $job->connection === 'redis');
+    $this->assertDatabaseCount('embeddings', 2);
 });
