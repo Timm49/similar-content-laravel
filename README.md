@@ -1,22 +1,19 @@
-# Laravel Similar Content
+# Similar Content Laravel
 
-Easily generate and manage content embeddings for your Laravel models, enabling content similarity and recommendation functionality powered by AI.
-
-Example News Feed Application using this package: [Timm49/example-app-similar-content](https://github.com/Timm49/example-app-similar-content)  
+Easily generate and manage content embeddings for your Laravel models, enabling content similarity and recommendation functionality.
 
 ### What this package does
 
-**1. Mark your models**
+**Generate embeddings of your databases content**
 
-[//]: # (Add the `#[HasEmbeddings]` attribute to any Eloquent model you want to use for content similarity. This tells the package to generate embeddings for that model using the OpenAI Embeddings API.)
+Use the built-in Artisan command to generate embeddings for all existing records of a given model. Once that's done you'll probably want to add a couple of lines your application code to handle it automatically when new records are created or updated. The embeddings are stored in your database.
 
-**2. Generate and store embeddings**
+**Get similar content**
 
-Use the built-in Artisan command to generate embeddings for all existing records, or call a method in your application code to handle it automatically when new records are created or updated. The embeddings are stored in your database.
+Retrieve similar content for a specific record and use it for a recommendation section, semantic searching or any other embedding related feature.
 
-**3. Get similar content**
-
-Retrieve similar content for a specific record and use it for a recommendation section.
+### See it in action
+A simple example application using this package can be found here: [timm49/example-app-similar-content](https://github.com/Timm49/example-app-similar-content)
 
 ## Installation
 
@@ -25,7 +22,6 @@ Install via Composer:
 ```bash
 composer require timm49/similar-content-laravel
 ```
-
 
 Run the installation command:
 
