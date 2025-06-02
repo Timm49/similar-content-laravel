@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 interface EmbeddingApi
 {
-    public function generateEmbeddings(Model $model): array;
+    public function generateEmbedding(Model $model): array;
 }

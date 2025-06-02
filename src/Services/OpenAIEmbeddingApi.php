@@ -23,20 +23,4 @@ class OpenAIEmbeddingApi implements EmbeddingApi
 
         return $response['data'][0]['embedding'];
     }
-
-    public function generateEmbeddings(Model $model): array
-    {
-        $input = method_exists($model, 'getEmbeddingData')
-            ? $model->getEmbeddingData()
-            : $model->toJson();
-
-        $response = Http::withToken(config('similar_content.openai_api_key'))
-            ->post('https://api.openai.com/v1/embeddings', [
-                'model' => 'text-embedding-3-small',
-                'input' => $input,
-            ])
-            ->json();
-
-        return $response['data'][0]['embedding'];
-    }
 }
