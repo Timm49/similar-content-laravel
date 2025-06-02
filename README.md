@@ -6,7 +6,7 @@ Easily generate and manage content embeddings for your Laravel models, enabling 
 
 **Generate embeddings of your databases content**
 
-Use the built-in Artisan command to generate embeddings for all existing records of a given model. Once that's done you'll probably want to add a couple of lines your application code to handle it automatically when new records are created or updated. The embeddings are stored in your database.
+Use the built-in Artisan command to generate embeddings for all existing records for all defined models. Once that's done you'll probably want to add a couple of lines your application code to handle it automatically when new records are created or updated. The embeddings are stored in your database.
 
 **Get similar content**
 
@@ -45,27 +45,29 @@ Add the SIMILAR_CONTENT_OPENAI_API_KEY to your .env file
 SIMILAR_CONTENT_OPENAI_API_KEY=some-key
 ```
 
-### Queue Connection
+### Mark the models you want to retrieve similar content for
 
-To generate embeddings in the background when running the artisan command, add the following variable to your .env file:
+Add the #[HasEmbeddings] attribute to the models you want to store embeddings for. Embeddings are necessary to find and compare similar items.
+```php
+use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 
-```env
-SIMILAR_CONTENT_QUEUE_CONNECTION=database
+#[HasEmbeddings]
+class Article extends Model
+{
+    use HasSimilarContent;
+}
 ```
-
-This automatically generates embeddings using a default transformation when running the artisan command.
-The default transformation simply does: $model->toJson()
 
 ### Generating embeddings for existing records
 
-This command will generate and create or update embeddings for the provided model:
+Run the artisan command to generate and store embeddings for the marked models:
 ```bash
-php artisan similar-content:generate-embeddings App\Models\Article
+php artisan similar-content:generate-embeddings
 ```
 
 To generate embeddings for all records, including existing items, use the --force flag:
 ```bash
-php artisan similar-content:generate-embeddings App\Models\Article --force
+php artisan similar-content:generate-embeddings --force
 ```
 
 To generate and store embeddings for a record from within your application code, use this:
