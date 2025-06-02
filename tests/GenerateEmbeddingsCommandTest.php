@@ -5,7 +5,7 @@ namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
 use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
@@ -18,10 +18,9 @@ function fake(int $dimensions = 1536): array
 beforeEach(function () {
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
     Artisan::call('migrate:fresh');
-    Queue::fake();
 });
 
-it('asks for a confirmation to generate embeddings for X amount of records', function () {
+it('checks how many records will be created and asks for confirmation', function () {
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
@@ -34,7 +33,7 @@ it('asks for a confirmation to generate embeddings for X amount of records', fun
                     'embedding' => fake()
                 ],
                 [
-                    'index' => 2,
+                    'ß' => 2,
                     'embedding' => fake()
                 ],
             ],
@@ -44,13 +43,26 @@ it('asks for a confirmation to generate embeddings for X amount of records', fun
     Comment::create(['content' => 'This is a test comment',]);
     Comment::create(['content' => 'This is also a test comment',]);
     Comment::create(['content' => 'This is another test comment',]);
+    
+    $className = Str::replace("\\", "\\\\" , Comment::class);
 
-    $this->artisan('similar-content:generate-embeddings ')
-        ->expectsConfirmation('This will generate embeddings for 3 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Comment. Do you want to continue?', 'yes')
+    $this->artisan("similar-content:generate-embeddings {$className} --force")
+        ->expectsConfirmation('This will generate embeddings for 3 records in Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment. Do you want to continue?', 'Yes')
         ->assertExitCode(0);
 });
 
+
 it('skips records which already have embeddings', function () {
+    Http::fake([
+        'https://api.openai.com/v1/embeddings' => Http::response([
+            'data' => [
+                [
+                    'index' => 0,
+                    'embedding' => fake()
+                ],
+            ],
+        ]),
+    ]);
     $articleWithEmbeddings = Article::create([
         'title' => 'Test Article',
         'content' => 'This is a test article',
@@ -65,9 +77,10 @@ it('skips records which already have embeddings', function () {
             'updated_at' => now(),
         ]
     ]);
+    $className = Str::replace("\\", "\\\\" , Article::class);
 
-    $this->artisan('similar-content:generate-embeddings Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article')
-        ->expectsOutputToContain('No records without embeddings found for model: ç')
+    $this->artisan("similar-content:generate-embeddings {$className}")
+        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article. Do you want to continue?', 'Yes')
         ->assertExitCode(0);
 });
 
@@ -88,8 +101,11 @@ it('creates embeddings for a single record', function () {
         'content' => 'This is a test article',
     ]);
 
-    $this->artisan('similar-content:generate-embeddings Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article --force')
-        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article. Do you want to continue?', 'yes');
+    $className = Str::replace("\\", "\\\\" , Article::class);
+
+    $this->artisan("similar-content:generate-embeddings {$className} --force")
+        ->expectsConfirmation('This will generate embeddings for 1 records in Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article. Do you want to continue?', 'Yes')
+        ->assertExitCode(0);
 });
 
 it('creates multiple embeddings in one call', function () {
@@ -117,8 +133,11 @@ it('creates multiple embeddings in one call', function () {
         'title' => 'Test Article 2',
         'content' => 'This is a test article 2',
     ]);
-    
-    $this->artisan('similar-content:generate-embeddings Timm49\\SimilarContentLaravel\\Tests\\Fixtures\\Models\\Article');
+
+    $className = Str::replace("\\", "\\\\" , Article::class);
+
+    $this->artisan("similar-content:generate-embeddings {$className} --force")
+        ->expectsConfirmation('This will generate embeddings for 2 records in Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article. Do you want to continue?', 'Yes');
 
     $this->assertDatabaseCount('embeddings', 2);
 });

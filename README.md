@@ -56,23 +56,21 @@ SIMILAR_CONTENT_QUEUE_CONNECTION=database
 This automatically generates embeddings using a default transformation when running the artisan command.
 The default transformation simply does: $model->toJson()
 
-### Generating embeddings
+### Generating embeddings for existing records
 
-#### Generate embeddings for existing records
-This command will generate and store embeddings for all annotated models which are already in your database, and don't have embeddings yet.
+This command will generate and create or update embeddings for the provided model:
 ```bash
-php artisan similar-content:generate-embeddings
+php artisan similar-content:generate-embeddings App\Models\Article
 ```
 
-To generate embeddings for all records, use the --force flag:
+To generate embeddings for all records, including existing items, use the --force flag:
 ```bash
-php artisan similar-content:generate-embeddings --force
+php artisan similar-content:generate-embeddings App\Models\Article --force
 ```
 
-To generate and store embeddings for a record from within your application code, use this command:
+To generate and store embeddings for a record from within your application code, use this:
 ```php
 SimilarContent::createEmbedding($article);
-
 ```
 
 ## Retrieving similar content
