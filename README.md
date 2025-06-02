@@ -2,7 +2,7 @@
 
 Easily generate and manage content embeddings for your Laravel models, enabling content similarity and recommendation functionality.
 
-### What this package does
+## What this package does
 
 **Generate embeddings of your databases content**
 
@@ -86,10 +86,6 @@ foreach ($results as $result) {
 
 This will return an **array of `SimilarContentResult` objects**, each representing a similar record and its similarity score.
 
-## Advanced usage
-
-### `SimilarContentResult` structure
-
 ```php
 class SimilarContentResult
 {
@@ -104,8 +100,9 @@ class SimilarContentResult
 }
 ```
 
-### Customizing Embedding Data
+## Advanced usage
 
+### Customizing Embedding Data
 The package ships with a `HasSimilarContent` trait which you can use in your models. You can customize the default behavior by overriding the `getEmbeddingData()` method:
 
 ```php
@@ -125,22 +122,22 @@ class Article extends Model
 This gives you full control over:
 
 - Which fields are included in the embedding
-- How the data is formatted
-- What text is used for similarity matching
+  - How the data is formatted
+  - What text is used for similarity matching
 
 > 📘 It's very important to include the right data for the right embedding purposes. I've added some links at the bottom of this README which should be helpful to get familiar with vector databases, embedding, etc.
 
-## How similarity is calculated
+### How similarity is calculated
 
 This package uses cosine similarity to compare content embeddings. After generating an embedding (a high-dimensional vector) for each model, it calculates the similarity between two records by measuring the cosine of the angle between their vectors.
 
 - A cosine similarity of 1 means the embeddings are identical (perfect match)
-- A score of 0 means they are completely unrelated (orthogonal vectors)
-- The result is a value between 0 and 1, where higher values indicate stronger similarity
+  - A score of 0 means they are completely unrelated (orthogonal vectors)
+  - The result is a value between 0 and 1, where higher values indicate stronger similarity
 
 All similarity comparisons are done in PHP by loading and comparing vectors in memory.
 
-## ⚠️ Database & Performance Notes
+### ⚠️ Database & Performance Notes
 
 This package **does not require a vector database** such as `pgvector`, `Pinecone`, or `Weaviate`. Instead, it stores embeddings in a regular database table (compatible with MySQL, PostgreSQL, etc.) and performs similarity comparisons in PHP.
 
@@ -149,19 +146,20 @@ This package **does not require a vector database** such as `pgvector`, `Pinecon
 #### ✅ Benefits
 
 * No need to set up or maintain a specialized vector database.
-* Works out-of-the-box with your existing Laravel database setup.
-* Easier to install, debug, and understand for most Laravel developers.
+  * Works out-of-the-box with your existing Laravel database setup.
+  * Easier to install, debug, and understand for most Laravel developers.
 
 #### ⚠️ Considerations
 
 * Since similarity comparisons are done in memory, **the package loads all embeddings of the same model** to calculate similarity scores.
-* **This may cause performance issues** if your application contains a large number of embeddings for a given model.
-* Not recommended for large-scale applications where millions of records need to be compared regularly. In such cases, a dedicated vector store (e.g., pgvector, Qdrant, Pinecone) may be more suitable.
+  * **This may cause performance issues** if your application contains a large number of embeddings for a given model.
+  * Not recommended for large-scale applications where millions of records need to be compared regularly. In such cases, a dedicated vector store (e.g., pgvector, Qdrant, Pinecone) may be more suitable.
 
 ## Useful resources
 
 Here's some good resources to get you started:
 
+- [Example Application](https://github.com/Timm49/example-app-similar-content) A Laravel application showcasing this package on dummy content. You can see the similarity results in action on both News Articles content, as well as ecommerce products.
 - [Beginner Friendly Deep Dive On Vector Databases](https://www.dailydoseofds.com/a-beginner-friendly-and-comprehensive-deep-dive-on-vector-databases) Good to get you started
 - [Evaluating Vector Databases 101](https://medium.com/tr-labs-ml-engineering-blog/evaluating-vector-databases-101-5f87a2366bb1) – A comprehensive guide to understanding vector DB architecture, indexing, filtering, ANN algorithms, and how to evaluate different options for production use.
 - [OpenAI Embeddings Documentation](https://platform.openai.com/docs/guides/embeddings) Official OpenAI docs
