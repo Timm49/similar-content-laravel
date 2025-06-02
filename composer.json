@@ -1,6 +1,6 @@
 {
     "name": "timm49/similar-content-laravel",
-    "description": "A Laravel package for generating and comparing content embeddings to find similar models using AI",
+    "description": "A Laravel package to get similar content for recommendations, semantic search and more powered by AI",
     "keywords": [
         "laravel",
         "ai",
