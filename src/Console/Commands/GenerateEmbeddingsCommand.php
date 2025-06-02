@@ -53,9 +53,11 @@ class GenerateEmbeddingsCommand extends Command
                 continue;
             }
 
-            $this->info("Embeddings generation job dispatched for $modelClass.");
+            $this->info("Generating embeddings for $modelClass.");
 
             $records->each(fn($record) => SimilarContent::createEmbedding($record));
+
+            $this->info("Embeddings for $modelClass generated.");
         }
 
         return 0;
