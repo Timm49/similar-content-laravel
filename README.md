@@ -7,6 +7,7 @@ Easily generate and manage content embeddings for your Laravel models, enabling 
 **Generate embeddings of your databases content**
 
 Use the built-in Artisan command to generate embeddings for all existing records for all defined models. Once that's done you'll probably want to add a couple of lines your application code to handle it automatically when new records are created or updated. The embeddings are stored in your database.
+Optionally, you can enable auto_generation, which generates embeddings automatically using model events (saved).
 
 **Get similar content**
 
@@ -39,11 +40,24 @@ php artisan migrate
 
 ### OpenAI API Key
 
+config/similar_content.php
+
+```php
+return [
+    'openai_api_key' => env('SIMILAR_CONTENT_OPENAI_API_KEY'),
+    'auto_generate' => false,
+];
+```
+
 Add the SIMILAR_CONTENT_OPENAI_API_KEY to your .env file
 
 ```env
 SIMILAR_CONTENT_OPENAI_API_KEY=some-key
 ```
+
+### Auto Generate
+If you want the package to automatically create/update embeddings using model events, you can do so by setting 'auto_generate' in the config to true.
+> Use carefully as this will call the API on every "saved" hook!
 
 ### Mark the models you want to retrieve similar content for
 
