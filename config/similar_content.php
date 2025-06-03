@@ -11,5 +11,15 @@ return [
     |
     */
     'openai_api_key' => env('SIMILAR_CONTENT_OPENAI_API_KEY'),
-    'queue_connection' => env('SIMILAR_CONTENT_QUEUE_CONNECTION'),
+    /*
+    |--------------------------------------------------------------------------
+    | Auto Generate (use wisely!)
+    |--------------------------------------------------------------------------
+    |
+    | When set to true, the package will automatically generate embeddings for
+    | the models with the #[HasEmbeddings] attribute assigned. It listens to
+    | Laravels saved() model event.
+    |
+    */
+    'auto_generate' => false,
 ];

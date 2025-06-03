@@ -18,6 +18,12 @@ class TestCase extends Orchestra
         Artisan::call('migrate:fresh');
     }
 
+    protected function getEnvironmentSetUp($app)
+    {
+        $app['config']->set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
+        $app['config']->set('similar_content.auto_generate', false);
+    }
+
     protected function getPackageProviders($app)
     {
         return [

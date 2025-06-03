@@ -2,7 +2,8 @@
 
 use Timm49\SimilarContentLaravel\Tests\TestCase;
 
-uses(TestCase::class)->in('.');
+//uses(TestCase::class)->in('.');
+uses(TestCase::class)->in('Unit', 'Feature');
 /*
 |--------------------------------------------------------------------------
 | Expectations

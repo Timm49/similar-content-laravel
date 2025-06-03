@@ -28,6 +28,7 @@ beforeEach(function () {
 });
 
 it('can search for similar content using a search query', function () {
+    
     $articleOne = ArticleFactory::new()->create();
     $articleTwo = ArticleFactory::new()->create();
     $comment = CommentFactory::new()->create();

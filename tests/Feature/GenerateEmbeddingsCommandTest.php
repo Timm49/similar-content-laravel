@@ -3,7 +3,6 @@
 namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
@@ -11,7 +10,6 @@ use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
 use Timm49\SimilarContentLaravel\Tests\Helpers\FakeEmbedding;
 
 beforeEach(function () {
-    Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
     Artisan::call('migrate:fresh');
 });
 

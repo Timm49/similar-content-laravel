@@ -13,7 +13,6 @@ use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Post;
 use Timm49\SimilarContentLaravel\Tests\Helpers\FakeEmbedding;
 
-
 beforeEach(function () {
     Config::set('similar_content.openai_api_key', 'my-api-key');
 });
