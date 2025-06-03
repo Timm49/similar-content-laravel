@@ -8,11 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
-
-function fake(int $dimensions = 1536): array
-{
-    return [0.1, 0.2, 0.3];
-}
+use Timm49\SimilarContentLaravel\Tests\Helpers\FakeEmbedding;
 
 beforeEach(function () {
     Config::set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
@@ -25,15 +21,15 @@ it('checks how many records will be created and asks for confirmation', function
             'data' => [
                 [
                     'index' => 0,
-                    'embedding' => fake()
+                    'embedding' => FakeEmbedding::generate()
                 ],
                 [
                     'index' => 1,
-                    'embedding' => fake()
+                    'embedding' => FakeEmbedding::generate()
                 ],
                 [
                     'ß' => 2,
-                    'embedding' => fake()
+                    'embedding' => FakeEmbedding::generate()
                 ],
             ],
         ]),
@@ -53,7 +49,7 @@ it('skips records which already have embeddings', function () {
             'data' => [
                 [
                     'index' => 0,
-                    'embedding' => fake()
+                    'embedding' => FakeEmbedding::generate()
                 ],
             ],
         ]),
@@ -85,7 +81,7 @@ it('creates embeddings for a single record', function () {
             'data' => [
                 [
                     'index' => 0,
-                    'embedding' => fake()
+                    'embedding' => FakeEmbedding::generate()
                 ],
             ],
         ]),
@@ -108,11 +104,11 @@ it('creates multiple embeddings in one call', function () {
             'data' => [
                 [
                     'index' => 0,
-                    'embedding' => fake()
+                    'embedding' => FakeEmbedding::generate()
                 ],
                 [
                     'index' => 1,
-                    'embedding' => fake()
+                    'embedding' => FakeEmbedding::generate()
                 ],
             ],
         ]),

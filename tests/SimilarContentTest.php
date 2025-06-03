@@ -11,11 +11,8 @@ use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\SimilarContentResult;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Post;
+use Timm49\SimilarContentLaravel\Tests\Helpers\FakeEmbedding;
 
-function fake(int $dimensions = 1536): array
-{
-    return [0.1, 0.2, 0.3];
-}
 
 beforeEach(function () {
     Config::set('similar_content.openai_api_key', 'my-api-key');
@@ -30,7 +27,7 @@ it('returns empty array when getting similar content', function () {
 });
 
 it('stores an embedding record for the article', function () {
-    $embedding = fake();
+    $embedding = FakeEmbedding::generate();
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
@@ -54,7 +51,7 @@ it('stores an embedding record for the article', function () {
 });
 
 it('uses the correct API key', function () {
-    $embedding = fake();
+    $embedding = FakeEmbedding::generate();
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
@@ -78,7 +75,7 @@ it('uses the data from the trait method', function () {
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
-                ['embedding' => fake()],
+                ['embedding' => FakeEmbedding::generate()],
             ],
         ]),
     ]);
@@ -98,7 +95,7 @@ it('uses default data when trait not used', function () {
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
-                ['embedding' => fake()],
+                ['embedding' => FakeEmbedding::generate()],
             ],
         ]),
     ]);
@@ -116,7 +113,7 @@ it('uses default data when trait not used', function () {
 });
 
 it('returns similar content results', function () {
-    $embedding = fake();
+    $embedding = FakeEmbedding::generate();
     Http::fake([
         'https://api.openai.com/v1/embeddings' => Http::response([
             'data' => [
