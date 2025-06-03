@@ -3,7 +3,7 @@
 namespace Timm49\SimilarContentLaravel\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 use Timm49\SimilarContentLaravel\Facades\SimilarContent;
 use Timm49\SimilarContentLaravel\SimilarContentProvider;
 
@@ -25,32 +25,9 @@ class GenerateEmbeddingsCommand extends Command
         return $errors ? 0 : 1;
     }
 
-    private function handleModel(mixed $modelClass): bool
+    private function handleModel(string $modelClass): bool
     {
-        if (!class_exists($modelClass)) {
-            $this->warn("Model class $modelClass does not exist.");
-            return false;
-        }
-
-        $modelInstance = new $modelClass;
-
-        if (!$modelInstance instanceof Model) {
-            $this->warn("$modelClass is not a valid Eloquent model.");
-            return false;
-        }
-
-        if ($this->option('force')) {
-            $records = $modelInstance::all();
-        } else {
-            $primaryKey = (new $modelInstance)->getKeyName();
-
-            $records = $modelInstance::whereNotIn($primaryKey, function ($query) use ($modelClass) {
-                $query->select('embeddable_id')
-                    ->from('embeddings')
-                    ->where('embeddable_type', $modelClass);
-            })->get();
-        }
-
+        $records = $this->getRecords($modelClass);
         $count = $records->count();
 
         if ($count === 0) {
@@ -69,4 +46,21 @@ class GenerateEmbeddingsCommand extends Command
 
         return true;
     }
-} 
+
+    private function getRecords(string $modelClass): Collection
+    {
+        $modelInstance = new $modelClass;
+
+        if ($this->option('force')) {
+            return $modelInstance::all();
+        }
+
+        $primaryKey = (new $modelInstance)->getKeyName();
+
+        return $modelInstance::whereNotIn($primaryKey, function ($query) use ($modelClass) {
+            $query->select('embeddable_id')
+                ->from('embeddings')
+                ->where('embeddable_type', $modelClass);
+        })->get();
+    }
+}
