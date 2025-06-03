@@ -8,16 +8,21 @@ use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
 
 class OpenAIEmbeddingApi implements EmbeddingApi
 {
-    public function generateEmbedding(Model $model): array
+    public function embedModel(Model $model): array
     {
         $input = method_exists($model, 'getEmbeddingData')
             ? $model->getEmbeddingData()
             : $model->toJson();
-        
+
+        return $this->embed($input);
+    }
+
+    public function embed(string $value): array
+    {
         $response = Http::withToken(config('similar_content.openai_api_key'))
             ->post('https://api.openai.com/v1/embeddings', [
                 'model' => 'text-embedding-3-small',
-                'input' => $input,
+                'input' => $value,
             ])
             ->json();
 

@@ -102,6 +102,52 @@ class SimilarContentResult
 
 ## Advanced usage
 
+### Semantic search
+You can also use this package to find records similar to a search query string, enabling semantic search in your application. Unlike traditional search, which matches exact words or phrases, semantic search understands the meaning behind the query — allowing users to find relevant results even if the wording doesn't exactly match.
+
+Behind the scenes, the package sends the query (e.g. 'Donald Trump') to the OpenAI API to generate an embedding and compares it to your stored model embeddings.
+
+Retrieving content similar to a query is as simple as:
+```php
+SimilarContent::search('Donald Trump');
+```
+> This will search for similar content for ALL target types (models)
+
+The response is similar to the getSimilarContent method, except from the sourceType and sourceId properties and could look something like this:
+```json
+[
+  {
+    "sourceType": "query",
+    "sourceId": null,
+    "targetType": "App\\Models\\Article",
+    "targetId": "1",
+    "similarityScore": 1
+  },
+  {
+    "sourceType": "query",
+    "sourceId": null,
+    "targetType": "App\\Models\\Article",
+    "targetId": "2",
+    "similarityScore": 0.7954736102977301
+  },
+  {
+    "sourceType": "query",
+    "sourceId": null,
+    "targetType": "App\\Models\\Comment",
+    "targetId": "1",
+    "similarityScore": 0.6253731102977394
+  }
+]
+```
+
+To search only similar items in "articles" and "pages", you can pass an array of models:
+```php
+SimilarContent::search('Donald Trump', [
+    Article::class,
+    Page::class,
+]);
+```
+
 ### Customizing Embedding Data
 The package ships with a `HasSimilarContent` trait which you can use in your models. You can customize the default behavior by overriding the `getEmbeddingData()` method:
 

@@ -22,7 +22,7 @@ class SimilarContentManager implements SimilarContentManagerContract
             'embeddable_id' => $model->id,
         ]);
 
-        $embedding->data = $this->embeddingApi->generateEmbedding($model);
+        $embedding->data = $this->embeddingApi->embedModel($model);
         $embedding->updated_at = now();
         $embedding->save();
     }
@@ -59,6 +59,32 @@ class SimilarContentManager implements SimilarContentManagerContract
 
         usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
 
+        return $results;
+    }
+
+    public function search(string $query, ?array $searchable = []): array
+    {
+        $q = Embedding::query();
+
+        if (count($searchable) > 0) {
+            $q->whereIn('embeddable_type', $searchable);
+        }
+
+        $results = [];
+        foreach ($q->get() as $targetEmbedding) {
+            $targetVector = $targetEmbedding->data;
+            $similarityScore = $this->calculateCosineSimilarity($this->embeddingApi->embed($query), $targetVector);
+
+            $results[] = new SimilarContentResult(
+                sourceType: 'query',
+                sourceId: null,
+                targetType: $targetEmbedding->embeddable_type,
+                targetId: $targetEmbedding->embeddable_id,
+                similarityScore: $similarityScore
+            );
+        }
+
+        usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
         return $results;
     }
 
