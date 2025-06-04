@@ -38,9 +38,9 @@ class SimilarContentManager implements SimilarContentManagerContract
         $ttl = now()->addSeconds(config('similar_content.cache_ttl', 3600));
 
         $cache = $store ? Cache::store($store) : Cache::store();
-
+        $key = "embeddings.{$model->getTable()}.{$model->id}";
         return $cache->remember(
-            "embeddings{$model->id}",
+            $key,
             $ttl,
             fn () => $this->querySimilarContent($model)
         );

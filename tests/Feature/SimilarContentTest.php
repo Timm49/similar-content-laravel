@@ -180,7 +180,7 @@ it('uses the cache on subsequent calls if configured in configuration', function
 
     Cache::shouldReceive('remember')
         ->twice()
-        ->with("embeddings{$article1->id}", \Mockery::type(\DateTimeInterface::class), \Mockery::type('Closure'))
+        ->with("embeddings.articles.{$article1->id}", \Mockery::type(\DateTimeInterface::class), \Mockery::type('Closure'))
         ->andReturn([$article2]); // Just returning any result that looks like the real one
 
     $results1 = SimilarContent::getSimilarContent($article1);
