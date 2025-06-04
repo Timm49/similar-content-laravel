@@ -46,6 +46,9 @@ config/similar_content.php
 return [
     'openai_api_key' => env('SIMILAR_CONTENT_OPENAI_API_KEY'),
     'auto_generate' => false,
+    'cache_enabled' => false, // true = similar results will be cached
+    'cache_store' => null, // null = use default
+    'cache_ttl' => 3600,   // in seconds
 ];
 ```
 

@@ -11,6 +11,7 @@ return [
     |
     */
     'openai_api_key' => env('SIMILAR_CONTENT_OPENAI_API_KEY'),
+
     /*
     |--------------------------------------------------------------------------
     | Auto Generate (use wisely!)
@@ -22,4 +23,16 @@ return [
     |
     */
     'auto_generate' => false,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Store
+    |--------------------------------------------------------------------------
+    |
+    | This will cache the similar content results for an hour using this driver
+    |
+    */
+    'cache_enabled' => false,
+    'cache_store' => null, // null = use default
+    'cache_ttl' => 3600,   // in seconds
 ];

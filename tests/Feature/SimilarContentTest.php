@@ -3,6 +3,7 @@
 namespace Timm49\SimilarContentLaravel\Tests;
 
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -113,13 +114,6 @@ it('uses default data when trait not used', function () {
 
 it('returns similar content results', function () {
     $embedding = FakeEmbedding::generate();
-    Http::fake([
-        'https://api.openai.com/v1/embeddings' => Http::response([
-            'data' => [
-                ['embedding' => $embedding],
-            ],
-        ]),
-    ]);
     $article1 = Article::create(['title' => 'Test Article 1', 'content' => 'Content 1']);
     $article2 = Article::create(['title' => 'Test Article 2', 'content' => 'Content 2']);
 
@@ -152,4 +146,45 @@ it('returns similar content results', function () {
     expect($result->targetType)->toBe(Article::class);
     expect($result->targetId)->toBe((string)$article2->id);
     expect($result->similarityScore)->toBeFloat();
+});
+
+it('uses the cache on subsequent calls if configured in configuration', function () {
+    Config::set('similar_content.cache_store', 'file');
+    Config::set('similar_content.cache_enabled', true);
+    $embedding = FakeEmbedding::generate();
+    $article1 = Article::create(['title' => 'Test Article 1', 'content' => 'Content 1']);
+    $article2 = Article::create(['title' => 'Test Article 2', 'content' => 'Content 2']);
+
+    Embedding::insert([
+        [
+            'embeddable_type' => Article::class,
+            'embeddable_id' => (string)$article1->id,
+            'data' => json_encode($embedding),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'embeddable_type' => Article::class,
+            'embeddable_id' => (string)$article2->id,
+            'data' => json_encode($embedding),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
+
+    Cache::flush();
+
+    Cache::shouldReceive('store')
+        ->with("file")
+        ->andReturnSelf();
+
+    Cache::shouldReceive('remember')
+        ->twice()
+        ->with("embeddings{$article1->id}", \Mockery::type(\DateTimeInterface::class), \Mockery::type('Closure'))
+        ->andReturn([$article2]); // Just returning any result that looks like the real one
+
+    $results1 = SimilarContent::getSimilarContent($article1);
+    $results2 = SimilarContent::getSimilarContent($article1);
+
+    expect($results2)->toEqual($results1);
 });

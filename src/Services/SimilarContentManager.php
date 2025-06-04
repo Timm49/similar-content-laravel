@@ -3,6 +3,7 @@
 namespace Timm49\SimilarContentLaravel\Services;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentManagerContract;
 use Timm49\SimilarContentLaravel\Models\Embedding;
@@ -29,37 +30,20 @@ class SimilarContentManager implements SimilarContentManagerContract
 
     public function getSimilarContent(Model $model): array
     {
-        $sourceEmbedding = Embedding::where('embeddable_type', get_class($model))
-            ->where('embeddable_id', $model->id)
-            ->first();
-
-        if (!$sourceEmbedding) {
-            return [];
+        if (!config('similar_content.cache_enabled')) {
+            return $this->querySimilarContent($model);
         }
 
-        $sourceVector = $sourceEmbedding->data;
-        $results = [];
+        $store = config('similar_content.cache_store');
+        $ttl = now()->addSeconds(config('similar_content.cache_ttl', 3600));
 
-        $targetEmbeddings = Embedding::where('embeddable_type', get_class($model))
-            ->where('embeddable_id', '!=', $model->id)
-            ->get();
+        $cache = $store ? Cache::store($store) : Cache::store();
 
-        foreach ($targetEmbeddings as $targetEmbedding) {
-            $targetVector = $targetEmbedding->data;
-            $similarityScore = $this->calculateCosineSimilarity($sourceVector, $targetVector);
-
-            $results[] = new SimilarContentResult(
-                sourceType: get_class($model),
-                sourceId: $model->id,
-                targetType: $targetEmbedding->embeddable_type,
-                targetId: $targetEmbedding->embeddable_id,
-                similarityScore: $similarityScore
-            );
-        }
-
-        usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
-
-        return $results;
+        return $cache->remember(
+            "embeddings{$model->id}",
+            $ttl,
+            fn () => $this->querySimilarContent($model)
+        );
     }
 
     public function search(string $query, ?array $searchable = []): array
@@ -108,5 +92,40 @@ class SimilarContentManager implements SimilarContentManagerContract
         }
 
         return $dotProduct / ($magnitudeA * $magnitudeB);
+    }
+
+    private function querySimilarContent(Model $model): array
+    {
+        $sourceEmbedding = Embedding::where('embeddable_type', get_class($model))
+            ->where('embeddable_id', $model->id)
+            ->first();
+
+        if (!$sourceEmbedding) {
+            return [];
+        }
+
+        $sourceVector = $sourceEmbedding->data;
+        $results = [];
+
+        $targetEmbeddings = Embedding::where('embeddable_type', get_class($model))
+            ->where('embeddable_id', '!=', $model->id)
+            ->get();
+
+        foreach ($targetEmbeddings as $targetEmbedding) {
+            $targetVector = $targetEmbedding->data;
+            $similarityScore = $this->calculateCosineSimilarity($sourceVector, $targetVector);
+
+            $results[] = new SimilarContentResult(
+                sourceType: get_class($model),
+                sourceId: $model->id,
+                targetType: $targetEmbedding->embeddable_type,
+                targetId: $targetEmbedding->embeddable_id,
+                similarityScore: $similarityScore
+            );
+        }
+
+        usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
+
+        return $results;
     }
 }

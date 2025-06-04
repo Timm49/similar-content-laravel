@@ -17,7 +17,7 @@ class GenerateEmbeddingsCommand extends Command
         $errors = false;
 
         foreach (SimilarContentProvider::getRegisteredModels() as $modelClass) {
-            if (!$this->handleModel($modelClass)) {
+            if (!$this->generateEmbeddingsForModel($modelClass)) {
                 $errors = true;
             }
         }
@@ -25,7 +25,7 @@ class GenerateEmbeddingsCommand extends Command
         return $errors ? 0 : 1;
     }
 
-    private function handleModel(string $modelClass): bool
+    private function generateEmbeddingsForModel(string $modelClass): bool
     {
         $records = $this->getRecords($modelClass);
         $count = $records->count();
