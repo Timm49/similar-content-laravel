@@ -7,4 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 interface EmbeddingApi
 {
     public function embedModel(Model $model): array;
+
+    public function embed(string $value): array;
 }
