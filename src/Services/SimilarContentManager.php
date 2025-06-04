@@ -5,15 +5,24 @@ namespace Timm49\SimilarContentLaravel\Services;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
+use Timm49\SimilarContentLaravel\Contracts\Registrar;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentDatabaseConnection;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentManagerContract;
 
 class SimilarContentManager implements SimilarContentManagerContract
 {
+    private array $registeredModels = [];
+
     public function __construct(
         private EmbeddingApi $embeddingApi,
         private SimilarContentDatabaseConnection $connection,
     ) {
+    }
+
+    public function register(Registrar $registrar): self
+    {
+        $this->registeredModels[$registrar->getModel()] = $registrar;
+        return $this;
     }
 
     public function createEmbedding(Model $model): void
@@ -24,18 +33,23 @@ class SimilarContentManager implements SimilarContentManagerContract
     public function getSimilarContent(Model $model): array
     {
         if (!config('similar_content.cache_enabled')) {
-            return $this->connection->getSimilarContent($model);
+            $results = $this->connection->getSimilarContent($model);
+        } else {
+            $store = config('similar_content.cache_store');
+            $ttl = now()->addSeconds(config('similar_content.cache_ttl', 3600));
+            $cache = $store ? Cache::store($store) : Cache::store();
+            $key = "embeddings.{$model->getTable()}.{$model->id}";
+            $results = $cache->remember(
+                $key,
+                $ttl,
+                fn () => $this->connection->getSimilarContent($model)
+            );
         }
 
-        $store = config('similar_content.cache_store');
-        $ttl = now()->addSeconds(config('similar_content.cache_ttl', 3600));
-        $cache = $store ? Cache::store($store) : Cache::store();
-        $key = "embeddings.{$model->getTable()}.{$model->id}";
-        return $cache->remember(
-            $key,
-            $ttl,
-            fn () => $this->connection->getSimilarContent($model)
-        );
+        if (isset($this->registeredModels[$model::class])) {
+            return $this->registeredModels[$model::class]->transform($results);
+        }
+        return $results;
     }
 
     public function search(string $query, ?array $searchable = []): array

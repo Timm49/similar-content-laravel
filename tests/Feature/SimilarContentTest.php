@@ -12,6 +12,7 @@ use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\SimilarContentResult;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Post;
+use Timm49\SimilarContentLaravel\Tests\Fixtures\Registrars\ArticleRegistrar;
 use Timm49\SimilarContentLaravel\Tests\Helpers\FakeEmbedding;
 
 beforeEach(function () {
@@ -187,4 +188,48 @@ it('uses the cache on subsequent calls if configured in configuration', function
     $results2 = SimilarContent::getSimilarContent($article1);
 
     expect($results2)->toEqual($results1);
+});
+
+
+it('transform data by using a registrar', function () {
+    $embedding = FakeEmbedding::generate();
+    $article1 = Article::create(['title' => 'Test Article 1', 'content' => 'Content 1']);
+    $article2 = Article::create(['title' => 'Test Article 2', 'content' => 'Content 2']);
+
+    Embedding::insert([
+        [
+            'embeddable_type' => Article::class,
+            'embeddable_id' => (string)$article1->id,
+            'data' => json_encode($embedding),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+        [
+            'embeddable_type' => Article::class,
+            'embeddable_id' => (string)$article2->id,
+            'data' => json_encode($embedding),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ],
+    ]);
+
+    $registrar = new ArticleRegistrar(Article::class);
+    SimilarContent::register($registrar);
+
+    $results = SimilarContent::getSimilarContent($article1);
+
+    expect($results)->toBeArray()
+        ->toHaveCount(1)
+        ->each->toBeArray();
+
+    $result = $results[0];
+    expect($result['sourceType'])->toBe(Article::class);
+    expect($result['sourceId'])->toBe((string)$article1->id);
+    expect($result['targetType'])->toBe(Article::class);
+    expect($result['targetId'])->toBe((string)$article2->id);
+    expect($result['similarityScore'])->toBeFloat();
+    expect($result['source']['id'])->toBe($article1->id);
+    expect($result['source']['title'])->toBe($article1->title);
+    expect($result['target']['id'])->toBe($article2->id);
+    expect($result['target']['title'])->toBe($article2->title);
 });
