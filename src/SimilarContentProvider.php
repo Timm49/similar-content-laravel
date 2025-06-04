@@ -27,13 +27,7 @@ class SimilarContentProvider extends ServiceProvider
 
     public function boot()
     {
-        $useModelEventListeners = config('similar_content.auto_generate', false);
-
-        if ($useModelEventListeners) {
-            foreach (self::getRegisteredModels() as $model) {
-                $model::observe(ModelObserver::class);
-            }
-        }
+        $this->registerModelEvents();
 
         if ($this->app->runningInConsole()) {
 
@@ -84,5 +78,16 @@ class SimilarContentProvider extends ServiceProvider
         }
 
         return null;
+    }
+
+    private function registerModelEvents(): void
+    {
+        $useModelEventListeners = config('similar_content.auto_generate', false);
+
+        if ($useModelEventListeners) {
+            foreach (self::getRegisteredModels() as $model) {
+                $model::observe(ModelObserver::class);
+            }
+        }
     }
 }
