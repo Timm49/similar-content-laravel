@@ -9,7 +9,6 @@ use Timm49\SimilarContentLaravel\Tests\Helpers\FakeEmbedding;
 uses(AutoGenerateEnabledTestCase::class);
 
 it('uses model observer to auto generate embeddings when enabled in config', function () {
-
     $embedding = FakeEmbedding::generate();
     
     Http::fake([

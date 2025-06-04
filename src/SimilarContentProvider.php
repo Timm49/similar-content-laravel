@@ -9,6 +9,7 @@ use Timm49\SimilarContentLaravel\Console\Commands\GenerateEmbeddingsCommand;
 use Timm49\SimilarContentLaravel\Console\Commands\InstallSimilarContentCommand;
 use Timm49\SimilarContentLaravel\Observers\ModelObserver;
 use Timm49\SimilarContentLaravel\Services\OpenAIEmbeddingApi;
+use Timm49\SimilarContentLaravel\Services\SimilarContentDefaultDatabase;
 use Timm49\SimilarContentLaravel\Services\SimilarContentManager;
 
 class SimilarContentProvider extends ServiceProvider
@@ -21,7 +22,8 @@ class SimilarContentProvider extends ServiceProvider
             __DIR__.'/../config/similar_content.php', 'similar_content'
         );
         $this->app->singleton('similar-content', fn () => new SimilarContentManager(
-            new OpenAIEmbeddingApi()
+            new OpenAIEmbeddingApi(),
+            new SimilarContentDefaultDatabase(),
         ));
     }
 
