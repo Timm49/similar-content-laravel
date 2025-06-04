@@ -14,19 +14,16 @@
 * [x] move api request to own class
 * [x] README: explain what happens in intro (storing in database)
 * [x] Add `php artisan similar-content:install` command to publish config/migrations and show helpful setup reminders
+* [x] Config flag to enable/disable automatic embedding generation on model `save()` (default: false)
+* [x] Cache similar results (optionally through config)
+* [x] Semantic search feature: SimilarContent::search('My search query')
 
 ### 📝 Optional / Planned
 
 **🔁 Core Package Enhancements**
-* [ ] Config flag to enable/disable automatic embedding generation on model `save()` (default: false)
-* [ ] Store embedding type (e.g., `search`, `similarity`, etc.) alongside embedding
-* [ ] Support for multiple embedding types (search vs similarity)
 * [ ] Support for transformers
-* [ ] Per-user personalization
 * [ ] Configurable model paths
 * [ ] Register models via class or factory
-* [ ] In-depth caching
-* [ ] Add event dispatching for lifecycle hooks
 
 **🧪 Test & Dev Utilities**
 * [ ] Add `SimilarContent::fake()` method
