@@ -44,28 +44,6 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
         return $results;
     }
 
-    private function calculateCosineSimilarity(array $vectorA, array $vectorB): float
-    {
-        $dotProduct = 0;
-        $magnitudeA = 0;
-        $magnitudeB = 0;
-
-        for ($i = 0; $i < count($vectorA); $i++) {
-            $dotProduct += $vectorA[$i] * $vectorB[$i];
-            $magnitudeA += $vectorA[$i] * $vectorA[$i];
-            $magnitudeB += $vectorB[$i] * $vectorB[$i];
-        }
-
-        $magnitudeA = sqrt($magnitudeA);
-        $magnitudeB = sqrt($magnitudeB);
-
-        if ($magnitudeA === 0 || $magnitudeB === 0) {
-            return 0;
-        }
-
-        return $dotProduct / ($magnitudeA * $magnitudeB);
-    }
-
     public function storeEmbedding(Model $model, array $embeddingData): void
     {
         $embedding = Embedding::firstOrNew([
@@ -105,4 +83,25 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
         return $results;
     }
 
+    private function calculateCosineSimilarity(array $vectorA, array $vectorB): float
+    {
+        $dotProduct = 0;
+        $magnitudeA = 0;
+        $magnitudeB = 0;
+
+        for ($i = 0; $i < count($vectorA); $i++) {
+            $dotProduct += $vectorA[$i] * $vectorB[$i];
+            $magnitudeA += $vectorA[$i] * $vectorA[$i];
+            $magnitudeB += $vectorB[$i] * $vectorB[$i];
+        }
+
+        $magnitudeA = sqrt($magnitudeA);
+        $magnitudeB = sqrt($magnitudeB);
+
+        if ($magnitudeA === 0 || $magnitudeB === 0) {
+            return 0;
+        }
+
+        return $dotProduct / ($magnitudeA * $magnitudeB);
+    }
 }
