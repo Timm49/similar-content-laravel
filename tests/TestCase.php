@@ -32,7 +32,7 @@ class TestCase extends Orchestra
             'host' => env('PGVECTOR_DB_HOST', '127.0.0.1'),
             'port' => env('PGVECTOR_DB_PORT', '5432'),
             'database' => env('PGVECTOR_DB_DATABASE', 'laravel_db'),
-            'username' => env('PGVECTOR_DB_USERNAME', 'timvanengelen'),
+            'username' => env('PGVECTOR_DB_USERNAME', ''),
             'password' => env('PGVECTOR_DB_PASSWORD', ''),
             'charset' => 'utf8',
             'prefix' => '',
