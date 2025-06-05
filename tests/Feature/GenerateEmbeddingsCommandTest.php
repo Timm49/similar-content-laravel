@@ -2,16 +2,11 @@
 
 namespace Timm49\SimilarContentLaravel\Tests\Jobs;
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 use Timm49\SimilarContentLaravel\Models\Embedding;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Article;
 use Timm49\SimilarContentLaravel\Tests\Fixtures\Models\Comment;
 use Timm49\SimilarContentLaravel\Tests\Helpers\FakeEmbedding;
-
-beforeEach(function () {
-    Artisan::call('migrate:fresh');
-});
 
 it('checks how many records will be created and asks for confirmation', function () {
     Http::fake([
@@ -62,7 +57,7 @@ it('skips records which already have embeddings', function () {
         [
             'embeddable_type' => Article::class,
             'embeddable_id' => (string)$articleWithEmbeddings->id,
-            'data' => json_encode([0.1, 0.2, 0.3]),
+            'data' => json_encode(FakeEmbedding::generate()),
             'created_at' => now(),
             'updated_at' => now(),
         ]

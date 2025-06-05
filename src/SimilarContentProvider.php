@@ -40,12 +40,12 @@ class SimilarContentProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__.'/../config/similar_content.php' => config_path('similar_content.php'),
-            ], 'similar-content-migrations');
+            ], 'similar-content-config');
 
             $this->publishes([
                 __DIR__.'/../database/migrations/create_embeddings_table.php' => database_path('migrations/create_embeddings_table.php'),
             ], 'similar-content-migrations');
-        }        
+        }
     }
 
     public static function getRegisteredModels(?string $path = null): array
