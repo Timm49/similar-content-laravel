@@ -12,18 +12,19 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
 {
     public function getSimilarContent(Model $model): array
     {
+        $results = [];
+
         $sourceEmbedding = Embedding::query()
             ->where('embeddable_type', get_class($model))
             ->where('embeddable_id', $model->id)
             ->first();
 
         if (!$sourceEmbedding) {
-            return [];
+            return $results;
         }
 
         $sqlArray = '[' . implode(',', $sourceEmbedding->data) . ']';
 
-        // We use raw DB query here because pgvector functions like `<#>` require raw SQL
         $targetRows = DB::table('embeddings')
             ->select(
                 'embeddable_type',
@@ -34,8 +35,6 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
             ->where('embeddable_id', '!=', $model->id)
             ->orderByDesc('similarity_score')
             ->get();
-
-        $results = [];
 
         foreach ($targetRows as $row) {
             $results[] = new SimilarContentResult(
@@ -50,23 +49,11 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
         return $results;
     }
 
-    public function storeEmbedding(Model $model, array $embeddingData): void
-    {
-        $embedding = Embedding::firstOrNew([
-            'embeddable_type' => get_class($model),
-            'embeddable_id' => $model->id,
-        ]);
-
-        $embedding->data = $embeddingData;
-        $embedding->updated_at = now();
-        $embedding->save();
-    }
-
     public function search(array $queryEmbedding, array $searchable): array
     {
+        $results = [];
         $sqlArray = '[' . implode(',', $queryEmbedding) . ']';
 
-        // We use raw DB query here because pgvector functions like `<#>` require raw SQL
         $targetRows = DB::table('embeddings')
             ->select(
                 'embeddable_type',
@@ -91,6 +78,7 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
         }
 
         usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
+
         return $results;
     }
 }

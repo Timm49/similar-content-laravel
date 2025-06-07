@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentDatabaseConnection;
 use Timm49\SimilarContentLaravel\Contracts\SimilarContentManagerContract;
+use Timm49\SimilarContentLaravel\Models\Embedding;
 
 class SimilarContentManager implements SimilarContentManagerContract
 {
@@ -18,7 +19,14 @@ class SimilarContentManager implements SimilarContentManagerContract
 
     public function createEmbedding(Model $model): void
     {
-        $this->connection->storeEmbedding($model, $this->embeddingApi->embedModel($model));
+        $embedding = Embedding::firstOrNew([
+            'embeddable_type' => get_class($model),
+            'embeddable_id' => $model->id,
+        ]);
+
+        $embedding->data = $this->embeddingApi->embedModel($model);
+        $embedding->updated_at = now();
+        $embedding->save();
     }
 
     public function getSimilarContent(Model $model): array

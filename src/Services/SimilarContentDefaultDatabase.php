@@ -11,31 +11,27 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
 {
     public function getSimilarContent(Model $model): array
     {
+        $results = [];
+
         $sourceEmbedding = Embedding::where('embeddable_type', get_class($model))
             ->where('embeddable_id', $model->id)
             ->first();
 
         if (!$sourceEmbedding) {
-            return [];
+            return $results;
         }
-
-        $sourceVector = $sourceEmbedding->data;
-        $results = [];
 
         $targetEmbeddings = Embedding::where('embeddable_type', get_class($model))
             ->where('embeddable_id', '!=', $model->id)
             ->get();
 
         foreach ($targetEmbeddings as $targetEmbedding) {
-            $targetVector = $targetEmbedding->data;
-            $similarityScore = $this->calculateCosineSimilarity($sourceVector, $targetVector);
-
             $results[] = new SimilarContentResult(
                 sourceType: get_class($model),
                 sourceId: $model->id,
                 targetType: $targetEmbedding->embeddable_type,
                 targetId: $targetEmbedding->embeddable_id,
-                similarityScore: $similarityScore
+                similarityScore: $this->calculateCosineSimilarity($sourceEmbedding->data, $targetEmbedding->data)
             );
         }
 
@@ -44,42 +40,27 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
         return $results;
     }
 
-    public function storeEmbedding(Model $model, array $embeddingData): void
-    {
-        $embedding = Embedding::firstOrNew([
-            'embeddable_type' => get_class($model),
-            'embeddable_id' => $model->id,
-        ]);
-
-        $embedding->data = $embeddingData;
-        $embedding->updated_at = now();
-        $embedding->save();
-    }
-
     public function search(array $queryEmbedding, array $searchable): array
     {
+        $results = [];
         $q = Embedding::query();
 
         if (count($searchable) > 0) {
             $q->whereIn('embeddable_type', $searchable);
         }
 
-        $results = [];
-        $targetEmbeddings = $q->get();
-        foreach ($targetEmbeddings as $targetEmbedding) {
-            $targetVector = $targetEmbedding->data;
-            $similarityScore = $this->calculateCosineSimilarity($queryEmbedding, $targetVector);
-
+        foreach ($q->get() as $targetEmbedding) {
             $results[] = new SimilarContentResult(
                 sourceType: 'query',
                 sourceId: null,
                 targetType: $targetEmbedding->embeddable_type,
                 targetId: $targetEmbedding->embeddable_id,
-                similarityScore: $similarityScore
+                similarityScore: $this->calculateCosineSimilarity($queryEmbedding, $targetEmbedding->data)
             );
         }
 
         usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
+        
         return $results;
     }
 

@@ -8,7 +8,5 @@ interface SimilarContentDatabaseConnection
 {
     public function getSimilarContent(Model $model): array;
 
-    public function storeEmbedding(Model $model, array $embeddingData): void;
-
     public function search(array $queryEmbedding, array $searchable): array;
 }
