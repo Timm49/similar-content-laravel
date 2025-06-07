@@ -11,6 +11,7 @@ use Timm49\SimilarContentLaravel\Observers\ModelObserver;
 use Timm49\SimilarContentLaravel\Services\OpenAIEmbeddingApi;
 use Timm49\SimilarContentLaravel\Services\SimilarContentDefaultDatabase;
 use Timm49\SimilarContentLaravel\Services\SimilarContentManager;
+use Timm49\SimilarContentLaravel\Services\SimilarContentPgVectorDatabase;
 
 class SimilarContentProvider extends ServiceProvider
 {
@@ -21,10 +22,20 @@ class SimilarContentProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/similar_content.php', 'similar_content'
         );
-        $this->app->singleton('similar-content', fn () => new SimilarContentManager(
-            new OpenAIEmbeddingApi(),
-            new SimilarContentDefaultDatabase(),
-        ));
+
+        $this->app->singleton('similar-content', function ($app) {
+            $connectionName = config('similar_content.connection', config('database.default'));
+            $driver = config("database.connections.{$connectionName}.driver");
+
+            $databaseConnection = $driver === 'pgsql'
+                ? new SimilarContentPgVectorDatabase()
+                : new SimilarContentDefaultDatabase();
+
+            return new SimilarContentManager(
+                new OpenAIEmbeddingApi(),
+                $databaseConnection
+            );
+        });
     }
 
     public function boot()
@@ -40,12 +51,12 @@ class SimilarContentProvider extends ServiceProvider
 
             $this->publishes([
                 __DIR__.'/../config/similar_content.php' => config_path('similar_content.php'),
-            ], 'similar-content-migrations');
+            ], 'similar-content-config');
 
             $this->publishes([
                 __DIR__.'/../database/migrations/create_embeddings_table.php' => database_path('migrations/create_embeddings_table.php'),
             ], 'similar-content-migrations');
-        }        
+        }
     }
 
     public static function getRegisteredModels(?string $path = null): array

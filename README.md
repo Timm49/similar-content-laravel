@@ -201,22 +201,28 @@ This package uses cosine similarity to compare content embeddings. After generat
 All similarity comparisons are done in PHP by loading and comparing vectors in memory.
 
 ### ⚠️ Database & Performance Notes
-
-This package **does not require a vector database** such as `pgvector`, `Pinecone`, or `Weaviate`. Instead, it stores embeddings in a regular database table (compatible with MySQL, PostgreSQL, etc.) and performs similarity comparisons in PHP.
-
-**This approach has pros and cons:**
+This package **does not require a dedicated vector database** but now also supports pgvector for PostgreSQL users, in addition to working with standard SQL databases like MySQL and SQLite.
 
 #### ✅ Benefits
 
-* No need to set up or maintain a specialized vector database.
-  * Works out-of-the-box with your existing Laravel database setup.
-  * Easier to install, debug, and understand for most Laravel developers.
+* Works out-of-the-box with your existing Laravel database setup — embeddings are stored in your current database, not a separate one.
+* No need to maintain a separate vector store unless needed.
+* With pgvector, similarity scoring can be offloaded to the database, improving performance for larger datasets.
 
 #### ⚠️ Considerations
 
-* Since similarity comparisons are done in memory, **the package loads all embeddings of the same model** to calculate similarity scores.
-  * **This may cause performance issues** if your application contains a large number of embeddings for a given model.
-  * Not recommended for large-scale applications where millions of records need to be compared regularly. In such cases, a dedicated vector store (e.g., pgvector, Qdrant, Pinecone) may be more suitable.
+There are two different ways similarity is calculated, depending on your database setup:
+
+#### PostgreSQL with pgvector support:
+* If you're using the pgvector extension, the package leverages native vector operations.
+* This allows similarity scores to be calculated directly in the database via SQL (e.g., 1 - (data <#> '...')), making queries significantly faster and scalable.
+
+#### Standard SQL databases (MySQL, SQLite, non-pgvector PostgreSQL, etc.):
+* The package loads all embeddings for the relevant model into memory and performs cosine similarity comparisons in PHP.
+* This can lead to performance issues with a large number of records.
+* Suitable for smaller or medium-sized datasets, but may not scale well with millions of embeddings.
+
+> ℹ️ If you're running PostgreSQL and expect to work with a high volume of embeddings, enabling pgvector is highly recommended for better performance and scalability.
 
 ## Useful resources
 
