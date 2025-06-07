@@ -35,9 +35,7 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
             );
         }
 
-        usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
-
-        return $results;
+        return collect($results)->sortByDesc('similarityScore')->values()->all();
     }
 
     public function search(array $queryEmbedding, array $searchable): array
@@ -59,9 +57,7 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
             );
         }
 
-        usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
-        
-        return $results;
+        return collect($results)->sortByDesc('similarityScore')->values()->all();
     }
 
     private function calculateCosineSimilarity(array $vectorA, array $vectorB): float

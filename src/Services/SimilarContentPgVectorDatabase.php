@@ -77,8 +77,6 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
             );
         }
 
-        usort($results, fn($a, $b) => $b->similarityScore <=> $a->similarityScore);
-
-        return $results;
+        return collect($results)->sortByDesc('similarityScore')->values()->all();
     }
 }
