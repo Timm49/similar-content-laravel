@@ -24,12 +24,11 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
         }
 
         $sqlArray = '[' . implode(',', $sourceEmbedding->data) . ']';
-
         $targetRows = DB::table('embeddings')
             ->select(
                 'embeddable_type',
                 'embeddable_id',
-                DB::raw("1 - (data <#> '{$sqlArray}') as similarity_score")
+                DB::raw("1 - (data <=> '{$sqlArray}') as similarity_score")
             )
             ->where('embeddable_type', get_class($model))
             ->where('embeddable_id', '!=', $model->id)
@@ -58,7 +57,7 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
             ->select(
                 'embeddable_type',
                 'embeddable_id',
-                DB::raw("1 - (data <#> '{$sqlArray}') as similarity_score")
+                DB::raw("1 - (data <=> '{$sqlArray}') as similarity_score")
             );
 
         if (!empty($searchable)) {
