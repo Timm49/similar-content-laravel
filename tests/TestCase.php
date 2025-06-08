@@ -27,7 +27,7 @@ class TestCase extends Orchestra
         $app['config']->set('similar_content.models_path', __DIR__ . '/Fixtures/Models');
         $app['config']->set('similar_content.auto_generate', false);
 
-        $app['config']->set('database.connections.pgvector', [
+        $app['config']->set('database.connections.pgsql', [
             'driver' => 'pgsql',
             'host' => env('PGVECTOR_DB_HOST', '127.0.0.1'),
             'port' => env('PGVECTOR_DB_PORT', '5432'),

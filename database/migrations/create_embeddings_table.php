@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        if (env('DB_CONNECTION') === 'pgvector') {
+        if (env('DB_CONNECTION') === 'pgsql') {
             Schema::create('embeddings', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('embeddable_id');
