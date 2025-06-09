@@ -7,11 +7,13 @@ use Illuminate\Support\ServiceProvider;
 use Timm49\SimilarContentLaravel\Attributes\HasEmbeddings;
 use Timm49\SimilarContentLaravel\Console\Commands\GenerateEmbeddingsCommand;
 use Timm49\SimilarContentLaravel\Console\Commands\InstallSimilarContentCommand;
+use Timm49\SimilarContentLaravel\Contracts\EmbeddingApi;
+use Timm49\SimilarContentLaravel\Contracts\SimilarContentDatabaseConnection;
 use Timm49\SimilarContentLaravel\Observers\ModelObserver;
-use Timm49\SimilarContentLaravel\Services\OpenAIEmbeddingApi;
-use Timm49\SimilarContentLaravel\Services\SimilarContentDefaultDatabase;
+use Timm49\SimilarContentLaravel\Services\Database\SimilarContentDefaultDatabase;
+use Timm49\SimilarContentLaravel\Services\Database\SimilarContentPgVectorDatabase;
+use Timm49\SimilarContentLaravel\Services\EmbeddingApi\OpenAIEmbeddingApi;
 use Timm49\SimilarContentLaravel\Services\SimilarContentManager;
-use Timm49\SimilarContentLaravel\Services\SimilarContentPgVectorDatabase;
 
 class SimilarContentProvider extends ServiceProvider
 {
@@ -24,16 +26,9 @@ class SimilarContentProvider extends ServiceProvider
         );
 
         $this->app->singleton('similar-content', function ($app) {
-            $connectionName = config('similar_content.connection', config('database.default'));
-            $driver = config("database.connections.{$connectionName}.driver");
-
-            $databaseConnection = $driver === 'pgsql'
-                ? new SimilarContentPgVectorDatabase()
-                : new SimilarContentDefaultDatabase();
-
             return new SimilarContentManager(
-                new OpenAIEmbeddingApi(),
-                $databaseConnection
+                $this->getEmbeddingApi(),
+                $this->getDatabaseConnection()
             );
         });
     }
@@ -102,5 +97,20 @@ class SimilarContentProvider extends ServiceProvider
                 $model::observe(ModelObserver::class);
             }
         }
+    }
+
+    private function getDatabaseConnection(): SimilarContentDatabaseConnection
+    {
+        $connectionName = config('database.default');
+        $driver = config("database.connections.{$connectionName}.driver");
+
+        return $driver === 'pgsql'
+            ? new SimilarContentPgVectorDatabase()
+            : new SimilarContentDefaultDatabase();
+    }
+
+    private function getEmbeddingApi(): EmbeddingApi
+    {
+        return new OpenAIEmbeddingApi();
     }
 }
