@@ -16,6 +16,7 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
     public function getSimilarContent(Model $model): array
     {
         $results = [];
+        $limit = config('similar_content.limit_similar_results', 10);
 
         $sourceEmbedding = Embedding::where('embeddable_type', get_class($model))
             ->where('embeddable_id', $model->id)
@@ -39,7 +40,11 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
             );
         }
 
-        return collect($results)->sortByDesc('similarityScore')->values()->all();
+        return collect($results)
+            ->sortByDesc('similarityScore')
+            ->values()
+            ->take($limit)
+            ->all();
     }
 
     /**
@@ -48,13 +53,16 @@ class SimilarContentDefaultDatabase implements SimilarContentDatabaseConnection
     public function search(array $queryEmbedding, array $searchable): array
     {
         $results = [];
+        $limit = config('similar_content.limit_search_results', 10);
         $q = Embedding::query();
 
         if (count($searchable) > 0) {
             $q->whereIn('embeddable_type', $searchable);
         }
 
-        foreach ($q->get() as $targetEmbedding) {
+        $targetEmbeddings = $q->limit($limit)->get();
+
+        foreach ($targetEmbeddings as $targetEmbedding) {
             $results[] = new SearchResult(
                 type: $targetEmbedding->embeddable_type,
                 id: $targetEmbedding->embeddable_id,

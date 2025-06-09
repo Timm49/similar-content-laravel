@@ -45,6 +45,8 @@ config/similar_content.php
 ```php
 return [
     'openai_api_key' => env('SIMILAR_CONTENT_OPENAI_API_KEY'), // OpenAI API Key
+    'limit_similar_results' => 10, // how many items will be fetched for similar results
+    'limit_search_results' => 10, // how many items will be fetched for search results
     'auto_generate' => false, // auto generate embeddings when a model is created/updated
     'cache_enabled' => false, // cache the similar content results
     'cache_ttl' => 3600,   // default ttl in seconds
@@ -208,12 +210,6 @@ There are two different ways similarity is calculated, depending on your databas
 * Suitable for smaller or medium-sized datasets, but may not scale well with millions of embeddings.
 
 > ℹ️ If you're running PostgreSQL and expect to work with a high volume of embeddings, enabling pgvector is highly recommended for better performance and scalability.
-
-## Roadmap
-
-* [ ] Add limit_similar_results to config
-* [ ] Add limit_search_results to config
-* [ ] Add `SimilarContent::fake()` method
 
 ## Useful resources
 

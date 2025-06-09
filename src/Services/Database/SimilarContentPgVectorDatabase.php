@@ -17,6 +17,7 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
     public function getSimilarContent(Model $model): array
     {
         $results = [];
+        $limit = config('similar_content.limit_similar_results', 10);
 
         $sourceEmbedding = Embedding::query()
             ->where('embeddable_type', get_class($model))
@@ -37,6 +38,7 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
             ->where('embeddable_type', get_class($model))
             ->where('embeddable_id', '!=', $model->id)
             ->orderByDesc('similarity_score')
+            ->limit($limit)
             ->get();
 
         foreach ($targetRows as $row) {
@@ -58,22 +60,24 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
     public function search(array $queryEmbedding, array $searchable): array
     {
         $results = [];
+        $limit = config('similar_content.limit_search_results', 10);
         $sqlArray = '[' . implode(',', $queryEmbedding) . ']';
-
-        $targetRows = DB::table('embeddings')
-            ->select(
-                'embeddable_type',
-                'embeddable_id',
-                DB::raw("1 - (data <=> '{$sqlArray}') as similarity_score")
-            );
+        $targetRows = DB::table('embeddings')->select(
+            'embeddable_type',
+            'embeddable_id',
+            DB::raw("1 - (data <=> '{$sqlArray}') as similarity_score")
+        );
 
         if (!empty($searchable)) {
             $targetRows->whereIn('embeddable_type', $searchable);
         }
 
-        $targetRows->orderByDesc('similarity_score');
+        $targetEmbeddings = $targetRows
+            ->orderByDesc('similarity_score')
+            ->limit($limit)
+            ->get();
 
-        foreach ($targetRows->get() as $targetEmbedding) {
+        foreach ($targetEmbeddings as $targetEmbedding) {
             $results[] = new SearchResult(
                 type: $targetEmbedding->embeddable_type,
                 id: $targetEmbedding->embeddable_id,
@@ -81,6 +85,6 @@ class SimilarContentPgVectorDatabase implements SimilarContentDatabaseConnection
             );
         }
 
-        return collect($results)->sortByDesc('similarityScore')->values()->all();
+        return $results;
     }
 }

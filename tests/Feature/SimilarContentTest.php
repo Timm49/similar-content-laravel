@@ -113,26 +113,11 @@ it('uses default data when trait not used', function () {
 });
 
 it('returns similar content results', function () {
-    $embedding = FakeEmbedding::generate();
     $article1 = Article::create(['title' => 'Test Article 1', 'content' => 'Content 1']);
     $article2 = Article::create(['title' => 'Test Article 2', 'content' => 'Content 2']);
 
-    Embedding::insert([
-        [
-            'embeddable_type' => Article::class,
-            'embeddable_id' => (string)$article1->id,
-            'data' => json_encode($embedding),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-        [
-            'embeddable_type' => Article::class,
-            'embeddable_id' => (string)$article2->id,
-            'data' => json_encode($embedding),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-    ]);
+    FakeEmbedding::store($article1);
+    FakeEmbedding::store($article2);
 
     $results = SimilarContent::getSimilarContent($article1);
 
@@ -148,28 +133,31 @@ it('returns similar content results', function () {
     expect($result->similarityScore)->toBeFloat();
 });
 
+it('limits the results as defined in the configuration', function () {
+    Config::set('similar_content.limit_similar_results', 2);
+    $article1 = Article::create(['title' => 'Test Article 1', 'content' => 'Content 1']);
+    $article2 = Article::create(['title' => 'Test Article 2', 'content' => 'Content 2']);
+    $article3 = Article::create(['title' => 'Test Article 3', 'content' => 'Content 3']);
+    $article4 = Article::create(['title' => 'Test Article 4', 'content' => 'Content 4']);
+
+    FakeEmbedding::store($article1);
+    FakeEmbedding::store($article2);
+    FakeEmbedding::store($article3);
+    FakeEmbedding::store($article4);
+
+    $results = SimilarContent::getSimilarContent($article1);
+
+    expect($results)->toBeArray()->toHaveCount(2);
+});
+
 it('uses the cache on subsequent calls if configured in configuration', function () {
     Config::set('similar_content.cache_enabled', true);
     $embedding = FakeEmbedding::generate();
     $article1 = Article::create(['title' => 'Test Article 1', 'content' => 'Content 1']);
     $article2 = Article::create(['title' => 'Test Article 2', 'content' => 'Content 2']);
 
-    Embedding::insert([
-        [
-            'embeddable_type' => Article::class,
-            'embeddable_id' => (string)$article1->id,
-            'data' => json_encode($embedding),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-        [
-            'embeddable_type' => Article::class,
-            'embeddable_id' => (string)$article2->id,
-            'data' => json_encode($embedding),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ],
-    ]);
+    FakeEmbedding::store($article1);
+    FakeEmbedding::store($article2);
 
     Cache::flush();
 
