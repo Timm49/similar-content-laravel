@@ -1,6 +1,7 @@
 # Similar Content Laravel
 
-Easily generate and manage content embeddings for your Laravel models, enabling content similarity and recommendation functionality.
+Help your users discover related content or find what they’re looking for—based on meaning, not just keywords.
+This package makes it easy to add content recommendations and semantic search to your Laravel app, without needing any knowledge of AI, vectors, or embeddings.
 
 ## What this package does
 
