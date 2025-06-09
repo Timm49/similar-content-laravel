@@ -1,9 +1,8 @@
 # Similar Content Laravel
-
-Help your users discover related content or find what they’re looking for—based on meaning, not just keywords.
-This package makes it easy to add content recommendations and semantic search to your Laravel app, without needing any knowledge of AI, vectors, or embeddings.
+Add content recommendations and semantic search to your Laravel applications in a breeze with the power of AI.
 
 ## What this package does
+This package simplifies adding content recommendations and semantic search to your Laravel application. You don't need any prior knowledge of AI, vectors, or embeddings—this package handles the complexity for you.
 
 **Generate embeddings of your databases content**
 
