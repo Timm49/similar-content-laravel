@@ -1,0 +1,4 @@
+vendor/
+.idea
+.DS_Store
+# Add other directories or files to ignore below

@@ -1,0 +1,55 @@
+{
+    "name": "timm49/similar-content-laravel",
+    "description": "A Laravel package to get similar content for recommendations, semantic search and more powered by AI",
+    "keywords": [
+        "laravel",
+        "ai",
+        "openai",
+        "similar content",
+        "content similarity",
+        "embeddings",
+        "vector search",
+        "recommendation",
+        "semantic search",
+        "php"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Timm49\\SimilarContentLaravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Timm49\\SimilarContentLaravel\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "guzzlehttp/guzzle": "^7.9",
+        "illuminate/http": "*",
+        "illuminate/support": "*"
+    },
+    "require-dev": {
+        "pestphp/pest": "^2.0",
+        "orchestra/testbench": "^8.0",
+        "laravel/pint": "^1.0"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Timm49\\SimilarContentLaravel\\SimilarContentProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
